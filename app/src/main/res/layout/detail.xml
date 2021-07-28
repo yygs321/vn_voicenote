@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Detail">
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="390dp"
+        android:layout_height="300dp"
+        android:layout_below="@+id/logobutton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/line"
+        android:ems="10"
+        android:gravity="top"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:padding="10dp"/>
+
+    <Button
+        android:id="@+id/mainbutton"
+        android:layout_width="450dp"
+        android:layout_height="280dp"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="12dp"
+        android:text="Touch Screen" />
+
+    <Button
+        android:id="@+id/logobutton"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/logo2"
+        tools:layout_editor_absoluteX="179dp"
+        tools:layout_editor_absoluteY="7dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="7dp"
+        android:layout_marginRight="7dp"
+        tools:layout_editor_absoluteX="179dp"
+        tools:layout_editor_absoluteY="700dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_above="@id/editText" />
+
+
+
+</RelativeLayout>

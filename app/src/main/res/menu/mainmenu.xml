@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="홈"
+        android:id="@+id/home"
+        app:showAsAction="never"
+        />
+    <item android:title="메모모음"
+        android:id="@+id/memo"
+        app:showAsAction="never"/>
+    <item android:title="가상비서 호출"
+        android:id="@+id/call"
+        app:showAsAction="never"/>
+</menu>
