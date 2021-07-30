@@ -34,14 +34,14 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
     public static Context mContext;
     private TextToSpeech tts;
     final int PERMISSON=1;
-    Intent sttIntent;
+    Intent sttIntent, i;
     SpeechRecognizer mRecognizer;
 
     EditText et1;
     TextView et2, et3;
     TextView txtInMsg;
     Button button;
-    Button button2;
+    Button logobutton;
     int click=0;
 
     public Detail() {
@@ -52,13 +52,20 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail);
+
+        i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+
+        mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        mRecognizer.setRecognitionListener(listener);
+
         mContext=this;
 
         dbHelper = new SQLiteHelper(Detail.this);
         memoList = dbHelper.selectAll();
 
         button = (Button)findViewById(R.id.mainbutton);
-        button2= (Button)findViewById(R.id.logobutton);
 
         et1 = (EditText)findViewById(R.id.editText);
         et2 = (TextView)findViewById(R.id.textView2);
@@ -124,13 +131,14 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
         });
 
         //로고 버튼: 리스트로 이동
-        button2.setOnClickListener(new View.OnClickListener() {
+        logobutton= findViewById(R.id.logobutton);
+        logobutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
-                startActivityForResult(intent, 101);
+                mRecognizer.startListening(i);
             }
         });
+
     }
 
     private void speechStart(){

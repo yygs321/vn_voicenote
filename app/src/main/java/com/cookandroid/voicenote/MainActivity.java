@@ -32,9 +32,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     EditText editText;
     Button logobutton;
     Button mainbutton;
+
     Intent intent;
+
     private TextToSpeech tts;
+
     SpeechRecognizer mRecognizer;
+    Intent i;
+
     final int PERMISSION = 1;
 
     @Override
@@ -49,19 +54,30 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         editText = (EditText) findViewById(R.id.editText);
 
-        intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getPackageName());
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+        i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+
+        mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        mRecognizer.setRecognitionListener(listener);
 
         tts= new TextToSpeech(this, this);
 
         //로고 버튼: 리스트로 이동
-        logobutton = (Button) findViewById(R.id.logobutton);
+        /*logobutton = (Button) findViewById(R.id.logobutton);
         logobutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
+            }
+        });*/
+
+        logobutton= findViewById(R.id.logobutton);
+        logobutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRecognizer.startListening(i);
             }
         });
 
@@ -100,10 +116,17 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 else{
                     mRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
                     mRecognizer.setRecognitionListener(listener);
-                    mRecognizer.startListening(intent);
+                    mRecognizer.startListening(i);
                 }
             }
-        });
+
+            protected void onDestroy(View view){
+
+            }
+
+        }
+
+        );
     }
     private RecognitionListener listener = new RecognitionListener()
     {
