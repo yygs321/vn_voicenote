@@ -21,6 +21,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
     Button button;
     Button logobutton;
     int click=0;
+    long delay;
 
     public Detail() {
     }
@@ -97,9 +100,40 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(click==0){
+                String str=et1.getText().toString();
+                if( System.currentTimeMillis() > delay ) {
+                    delay = System.currentTimeMillis() + 200;
                     speakOut();
+                    return;
                 }
+                if(System.currentTimeMillis() <= delay) {
+                    Date date = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                    String substr = sdf.format(date);
+
+                    //입력받은 메모 리스트로 보내기
+                    Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
+                    intent1.putExtra("main", str);
+                    intent1.putExtra("sub", substr);
+                    setResult(200, intent1);
+                    speakOut();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            finish();
+                        }
+                    }, 5000);
+                    finish();
+                }
+                else {
+                    mRecognizer.startListening(i);
+                }
+            }
+
+            protected void onDestroy(View view){
+
             }
         });
 

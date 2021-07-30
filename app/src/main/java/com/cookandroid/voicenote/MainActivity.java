@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     final int PERMISSION = 1;
 
+    long delay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,14 +84,19 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
 
         //메모 완료 후 저장버튼
+        // 한번->음성출력
+        // 두번->저장 후 뒤로가기
         mainbutton= findViewById(R.id.mainbutton);
         mainbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String str=editText.getText().toString();
-                //메모에 하나라도 썼을 경우에만 실행
-                if(str.length()>0) {
-                    //날짜
+                if( System.currentTimeMillis() > delay ) {
+                    delay = System.currentTimeMillis() + 200;
+                    speakOut();
+                    return;
+                }
+                if(System.currentTimeMillis() <= delay) {
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -108,14 +115,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                             finish();
                         }
                     }, 5000);
-
-                    /*화면 닫히게하지 않고 리스트로 화면 전환
-                    startActivityForResult(intent1,200);
-                    */
+                    finish();
                 }
-                else{
-                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
-                    mRecognizer.setRecognitionListener(listener);
+                else {
                     mRecognizer.startListening(i);
                 }
             }
@@ -123,10 +125,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             protected void onDestroy(View view){
 
             }
-
-        }
-
-        );
+        });
     }
     private RecognitionListener listener = new RecognitionListener()
     {
