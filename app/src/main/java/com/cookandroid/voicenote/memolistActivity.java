@@ -51,7 +51,6 @@ import java.util.List;
 
 
 public class memolistActivity extends AppCompatActivity {
-    SpeechRecognizer mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
     final int PERMISSION = 1;
     Intent intent;
 
@@ -60,6 +59,9 @@ public class memolistActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerAdapter recyclerAdapter;
 
+    Intent i;
+    SpeechRecognizer mRecognizer;
+
     //recyclerView에 들어갈 전역변수 List
     List<Memo> memoList;
 
@@ -67,6 +69,14 @@ public class memolistActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.memolist);
+
+        i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+
+        mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        mRecognizer.setRecognitionListener(listener);
+
 
         if ( Build.VERSION.SDK_INT >= 23 ){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
@@ -98,20 +108,11 @@ public class memolistActivity extends AppCompatActivity {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(memolistActivity.this, memolistActivity.class);
-                startActivityForResult(intent, 0);
-                mRecognizer = SpeechRecognizer.createSpeechRecognizer(memolistActivity.this);
-                mRecognizer.setRecognitionListener(listener);
-                mRecognizer.startListening(intent);
-
+                mRecognizer.startListening(i);
             }
         });
     }
-    private void speechInit(){
-        mRecognizer = SpeechRecognizer.createSpeechRecognizer(memolistActivity.this);
-        mRecognizer.setRecognitionListener(listener);
-        mRecognizer.startListening(intent);
-    }
+
     private RecognitionListener listener = new RecognitionListener()
     {
         @Override
