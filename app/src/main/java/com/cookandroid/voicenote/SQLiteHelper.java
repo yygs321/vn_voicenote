@@ -4,7 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
+import android.text.Editable;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -53,6 +58,13 @@ public class SQLiteHelper {
 
     public void deleteMemo(int position){
         String sql = "DELETE FROM " + table1 + " WHERE seq = " + position +";";
+        db.execSQL(sql);
+    }
+
+    public void updateMemo(int position, String memot){
+        String guideStr = "수정 시도";
+        Toast.makeText(context.getApplicationContext(), guideStr, Toast.LENGTH_SHORT).show();
+        String sql = "UPDATE " + table1 +" SET maintext = '"+ memot + "' WHERE seq = " + position +";";
         db.execSQL(sql);
     }
 

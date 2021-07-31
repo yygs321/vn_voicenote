@@ -10,6 +10,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 //TTS
 import android.speech.tts.TextToSpeech;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 public class Detail extends AppCompatActivity implements TextToSpeech.OnInitListener{
     private static final int URI_INTENT_SCHEME = 0;
     List<Memo> memoList;
-
+//test
     SQLiteHelper dbHelper;
 
     public static Context mContext;
@@ -222,18 +223,34 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 imsi = reverseString(imsi);
                 et1.setText(imsi);
             }
-            else if(resultStr.indexOf("조금지우기")>-1){
+            else if(resultStr.indexOf("한자리")>-1){
                 String imsi = et1.getText().toString();
                 imsi = reverseString(imsi);
-                int n = imsi.length();
-                imsi = imsi.substring(n/5);
+                imsi = imsi.substring(5);
                 imsi = reverseString(imsi);
                 et1.setText(imsi);
             }
-            else if(resultStr.indexOf("단어지우기")>-1){
+            else if(resultStr.indexOf("두자리")>-1){
                 String imsi = et1.getText().toString();
+                imsi = reverseString(imsi);
+                imsi = imsi.substring(6);
+                imsi = reverseString(imsi);
+                et1.setText(imsi);
+            }
+            else if(resultStr.indexOf("세자리")>-1){
+                String imsi = et1.getText().toString();
+                imsi = reverseString(imsi);
+                imsi = imsi.substring(7);
+                imsi = reverseString(imsi);
+                et1.setText(imsi);
+            }
+            else if(resultStr.indexOf("단어")>-1){
+                String imsi = et1.getText().toString();
+                imsi = reverseString(imsi);
                 int idx = imsi.indexOf(" ");
                 String imsi1 = imsi.substring(0, idx);
+                imsi1 = imsi1.substring(2);
+                imsi1 = reverseString(imsi1);
                 et1.setText(imsi1);
             }
             else if(resultStr.indexOf("삭제")>-1) {
@@ -242,8 +259,20 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
             }
-            else if(resultStr.indexOf("이동")>-1) {
+            else if(resultStr.indexOf("저장")>-1) {
+                int a = Integer.parseInt(et3.getText().toString());
+                String imsi = et1.getText().toString();
+                imsi = reverseString(imsi);
+                imsi = imsi.substring(2);
+                imsi = reverseString(imsi);
+                dbHelper.updateMemo(a, imsi);
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
+                startActivityForResult(intent, 101);
+            }
+            else if(resultStr.indexOf("이동")>-1) {
+                et1.setText(null);//이동은 잘되는데 원래 텍스트+이동 을 자꾸 다시 읽어서 아예 null처리
+                Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
+                startActivityForResult(intent, 101);
             }
             speakOut();
         }

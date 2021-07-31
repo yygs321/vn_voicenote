@@ -204,9 +204,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
             }
-            else if(resultStr.indexOf("이동")>-1) {
-                Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
-            }
             speakOut();
         }
     };
