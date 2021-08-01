@@ -21,6 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
@@ -56,6 +59,7 @@ public class memolistActivity extends AppCompatActivity {
     Intent intent;
 
     SQLiteHelper dbHelper;
+
 
     RecyclerView recyclerView;
     RecyclerAdapter recyclerAdapter;
@@ -181,7 +185,7 @@ public class memolistActivity extends AppCompatActivity {
                     message = "알 수 없는 오류임";
                     break;
             }
-            Toast.makeText(getApplicationContext(), "에러가 발생하였습니다. : " +
+            Toast.makeText(getApplicationContext(), "에러 발생: " +
                     message,Toast.LENGTH_SHORT).show();
         }
 
@@ -200,7 +204,6 @@ public class memolistActivity extends AppCompatActivity {
             resultStr = resultStr.replace(" ","");
             actionActivity(resultStr);
 
-            autoStart();
         }
         @Override
         public void onPartialResults(Bundle partialResults) {}
@@ -211,20 +214,21 @@ public class memolistActivity extends AppCompatActivity {
             if(resultStr.indexOf("메모작성")>-1){
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
-                //메모작성 후 음성인식 반복
+                //메모작성 후 음성인식 반복 정지
             }
-            else if(resultStr.indexOf("메모 검색")>-1){
+            else if(resultStr.indexOf("메모검색")>-1){
                 Toast.makeText(getApplicationContext(),"메모 검색 명령어 인식",Toast.LENGTH_SHORT).show();
             }
-            else if(resultStr.indexOf("전체 삭제")>-1){
+            else if(resultStr.indexOf("전체삭제")>-1){
                 Toast.makeText(getApplicationContext(),"전체 삭제 명령어 인식",Toast.LENGTH_LONG).show();
 
+                dbHelper.deleteAll();
+                //삭제 후 음성인식 재 실행
+                autoStart();
             }
 
         }
     };
-
-
 
 
     public static String reverseString(String s){

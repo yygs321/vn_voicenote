@@ -95,11 +95,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mainbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //한번 클릭
                 if( System.currentTimeMillis() > delay ) {
                     delay = System.currentTimeMillis() + 200;
                     speakOut();
                     return;
                 }
+                //더블 클릭
                 if(System.currentTimeMillis() <= delay) {
                     saveMemo();
                 }
@@ -177,9 +179,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 resultStr = resultStr.replace(" ","");
                 actionActivity(resultStr);
 
-
-                //2초 후 자동 음성인식 실행
-                autoStart();
+                //"저장", "취소"가 아닐 때만 반복
+                if (resultStr.indexOf("저장")>-1){}
+                else if(resultStr.indexOf("취소")>-1){}
+                else autoStart();
             }
         @Override
         public void onPartialResults(Bundle partialResults) {}
@@ -223,8 +226,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 int a = Integer.parseInt(et3.getText().toString());
                  */
                 saveMemo();
-
-
             }
 
         }
