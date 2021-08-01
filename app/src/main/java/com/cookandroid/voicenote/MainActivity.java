@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +31,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
     EditText editText;
+    //TextView et3;
     Button logobutton;
     Button mainbutton;
 
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     SpeechRecognizer mRecognizer;
     Intent i;
+
+
 
     final int PERMISSION = 1;
 
@@ -56,6 +60,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         editText = (EditText) findViewById(R.id.editText);
 
+        /*
+        et3 = (TextView)findViewById(R.id.textView3);
+        int no = intent.getExtras().getInt("no");
+        et3.setText(String.valueOf(no));
+        */
         i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
@@ -65,16 +74,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         tts= new TextToSpeech(this, this);
 
-        //로고 버튼: 리스트로 이동
-        /*logobutton = (Button) findViewById(R.id.logobutton);
-        logobutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
-                startActivityForResult(intent, 101);
-            }
-        });*/
 
+        //로고버튼: 음성인식
         logobutton= findViewById(R.id.logobutton);
         logobutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +84,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
 
+
+        //화면 전환 후 자동 음성인식 실행
+        autoStart();
+
         //메모 완료 후 저장버튼
         // 한번->음성출력
         // 두번->저장 후 뒤로가기
@@ -90,32 +95,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mainbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String str=editText.getText().toString();
                 if( System.currentTimeMillis() > delay ) {
                     delay = System.currentTimeMillis() + 200;
                     speakOut();
                     return;
                 }
                 if(System.currentTimeMillis() <= delay) {
-                    Date date = new Date();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-                    String substr = sdf.format(date);
-
-                    //입력받은 메모 리스트로 보내기
-                    Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
-                    intent1.putExtra("main", str);
-                    intent1.putExtra("sub", substr);
-                    setResult(200, intent1);
-                    speakOut();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            finish();
-                        }
-                    }, 5000);
-                    finish();
+                    saveMemo();
                 }
                 else {
                     mRecognizer.startListening(i);
@@ -174,23 +160,27 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     message = "알 수 없는 오류임";
                     break;
             }
-            Toast.makeText(getApplicationContext(), "에러가 발생하였습니다. : " +
+            Toast.makeText(getApplicationContext(), "에러 발생: " +
                     message,Toast.LENGTH_SHORT).show(); }
 
             @Override
             public void onResults(Bundle results) {
-            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-            String resultStr = "";
+                String resultStr = "";
 
-            for(int i = 0; i < matches.size() ; i++){
-                editText.setText(matches.get(i));
-                resultStr += matches.get(i);
+                for(int i = 0; i < matches.size() ; i++){
+                    editText.setText(matches.get(i));
+                    resultStr += matches.get(i);
+                }
+                if(resultStr.length()<1) return;
+                resultStr = resultStr.replace(" ","");
+                actionActivity(resultStr);
+
+
+                //2초 후 자동 음성인식 실행
+                autoStart();
             }
-            if(resultStr.length()<1) return;
-            resultStr = resultStr.replace(" ","");
-            actionActivity(resultStr);
-        }
         @Override
         public void onPartialResults(Bundle partialResults) {}
         @Override
@@ -227,6 +217,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 startActivityForResult(intent, 101);
             }
             speakOut();
+
+            if(resultStr.indexOf("저장")>-1){
+                /*
+                int a = Integer.parseInt(et3.getText().toString());
+                 */
+                saveMemo();
+
+
+            }
+
         }
     };
     public static String reverseString(String s){
@@ -258,5 +258,40 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void speakOut(){
         String text=editText.getText().toString();
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    //자동 음성인식
+    private void autoStart(){
+        //2초 후 자동 음성인식 실행
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                logobutton.performClick();
+            }
+        },2000);
+    }
+
+    //메모 저장
+    private void saveMemo(){
+        //입력받은 메모 리스트로 보내기
+        String str=editText.getText().toString();
+
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        String substr = sdf.format(date);
+
+        Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
+        intent1.putExtra("main", str);
+        intent1.putExtra("sub", substr);
+        setResult(200, intent1);
+        speakOut();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 5000);
+        finish();
     }
 }
