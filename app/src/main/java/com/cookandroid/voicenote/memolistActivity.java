@@ -4,6 +4,7 @@ package com.cookandroid.voicenote;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Handler;
 import android.speech.RecognitionListener;
@@ -62,8 +63,14 @@ public class memolistActivity extends AppCompatActivity {
     Intent i;
     SpeechRecognizer mRecognizer;
 
+    //어플 실행 후 음성인식 자동 실행
+    EditText autoSystem;
+
     //recyclerView에 들어갈 전역변수 List
     List<Memo> memoList;
+
+    Button button;
+    Button button3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +101,7 @@ public class memolistActivity extends AppCompatActivity {
         recyclerView.setAdapter(recyclerAdapter);
 
         //작성하기 버튼
-        Button button= findViewById(R.id.button);
+        button= findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,13 +111,27 @@ public class memolistActivity extends AppCompatActivity {
         });
 
         //로고버튼으로 음성인식 받기
-        Button button3= findViewById(R.id.button3);
+        button3= findViewById(R.id.button3);
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mRecognizer.startListening(i);
             }
         });
+
+
+        //자동 음성인식 실행
+        autoStart();
+    }
+
+    private void autoStart(){
+        //2초 후 자동 음성인식 실행
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                button3.performClick();
+            }
+        },2000);
     }
 
     private RecognitionListener listener = new RecognitionListener()
@@ -178,6 +199,8 @@ public class memolistActivity extends AppCompatActivity {
             if(resultStr.length()<1) return;
             resultStr = resultStr.replace(" ","");
             actionActivity(resultStr);
+
+            autoStart();
         }
         @Override
         public void onPartialResults(Bundle partialResults) {}
@@ -188,16 +211,22 @@ public class memolistActivity extends AppCompatActivity {
             if(resultStr.indexOf("메모작성")>-1){
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
+                //메모작성 후 음성인식 반복
             }
-            else if(resultStr.indexOf("메모검색")>-1){
+            else if(resultStr.indexOf("메모 검색")>-1){
                 Toast.makeText(getApplicationContext(),"메모 검색 명령어 인식",Toast.LENGTH_SHORT).show();
             }
-            else if(resultStr.indexOf("전체삭제")>-1){
-                Toast.makeText(getApplicationContext(),"전체 삭제 명령어 인식",Toast.LENGTH_SHORT).show();
+            else if(resultStr.indexOf("전체 삭제")>-1){
+                Toast.makeText(getApplicationContext(),"전체 삭제 명령어 인식",Toast.LENGTH_LONG).show();
+
             }
 
         }
     };
+
+
+
+
     public static String reverseString(String s){
         return (new StringBuffer(s)).reverse().toString();
     }
