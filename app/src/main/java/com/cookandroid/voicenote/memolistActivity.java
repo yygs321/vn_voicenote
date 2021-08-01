@@ -204,6 +204,11 @@ public class memolistActivity extends AppCompatActivity {
             resultStr = resultStr.replace(" ","");
             actionActivity(resultStr);
 
+            //다른 화면 넘어가면 음성인식 실행 하지 않도록
+            if (resultStr.indexOf("메모작성")>-1){}
+            else if(resultStr.indexOf("메모수정")>-1){}
+            else autoStart();
+
         }
         @Override
         public void onPartialResults(Bundle partialResults) {}
@@ -216,7 +221,7 @@ public class memolistActivity extends AppCompatActivity {
                 startActivityForResult(intent, 0);
                 //메모작성 후 음성인식 반복 정지
             }
-            else if(resultStr.indexOf("메모검색")>-1){
+            else if(resultStr.indexOf("메모수정")>-1){
                 Toast.makeText(getApplicationContext(),"메모 검색 명령어 인식",Toast.LENGTH_SHORT).show();
             }
             else if(resultStr.indexOf("전체삭제")>-1){
