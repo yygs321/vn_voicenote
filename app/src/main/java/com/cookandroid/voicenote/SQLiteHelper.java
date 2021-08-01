@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class SQLiteHelper {
     private static final String dbName = "myMemo";
@@ -83,5 +85,21 @@ public class SQLiteHelper {
         }
         results.close();
         return list;
+    }
+
+    //테이블 전체 데이터 삭제
+    public void deleteAll(){
+        String sql = "DELETE FROM " + table1 +";";
+        db.execSQL(sql);
+        //전체 삭제 되기는 하는데 나갔다가 들어와야함
+    }
+
+    //특정 날짜 기준 삭제
+    public void deleteDate(){
+        Calendar cal= Calendar.getInstance();
+        cal.add(Calendar.DATE, -1); //하루 전 날짜
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        String pDate=sdf.format(cal.getTime());
+        db.execSQL("DELETE FROM TB_CHARGE_HISTORY WHERE _start_date<"+""+pDate+"00:00:00");
     }
 }
