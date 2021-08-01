@@ -219,7 +219,6 @@ public class memolistActivity extends AppCompatActivity {
             else if(resultStr.indexOf("전체 삭제")>-1){
                 Toast.makeText(getApplicationContext(),"전체 삭제 명령어 인식",Toast.LENGTH_LONG).show();
 
-
             }
 
         }
