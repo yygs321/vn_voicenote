@@ -176,6 +176,17 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
     }
 
+    //자동 음성인식
+    private void autoStart(){
+        //2초 후 자동 음성인식 실행
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                logobutton.performClick();
+            }
+        },2000);
+    }
+
     private void speechStart(){
         //음성인식 객체
         mRecognizer= SpeechRecognizer.createSpeechRecognizer(mContext);
@@ -244,6 +255,8 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
             resultStr = resultStr.replace(" ", "");
 
             actionActivity(resultStr);
+
+            autoStart();
         }
 
         @Override
