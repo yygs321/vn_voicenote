@@ -27,7 +27,8 @@
         android:layout_below="@+id/editText"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="12dp"
-        android:text="Touch Screen" />
+        android:text="Touch Screen"
+        android:background="#93db58"/>
 
     <Button
         android:id="@+id/logobutton"

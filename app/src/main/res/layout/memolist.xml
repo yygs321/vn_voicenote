@@ -30,7 +30,8 @@
         android:layout_width="409dp"
         android:layout_height="206dp"
         android:layout_alignParentBottom="true"
-        android:text="메모 작성하기" />
+        android:text="메모 작성하기"
+        android:background="#93db58"/>
 
     <Button
         android:id="@+id/button3"
@@ -39,6 +40,6 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:background="@drawable/logo2" />
+        android:background="@drawable/logo2"/>
 
 </RelativeLayout>

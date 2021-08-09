@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.speech.RecognitionListener;
@@ -120,12 +121,14 @@ public class memolistActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mRecognizer.startListening(i);
+                setBackground("#ff1f4f");
             }
         });
 
 
         //자동 음성인식 실행
         autoStart();
+
     }
 
     private void autoStart(){
@@ -133,6 +136,7 @@ public class memolistActivity extends AppCompatActivity {
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                setBackground("#ff1f4f");
                 button3.performClick();
             }
         },2000);
@@ -205,8 +209,12 @@ public class memolistActivity extends AppCompatActivity {
             actionActivity(resultStr);
 
             //다른 화면 넘어가면 음성인식 실행 하지 않도록
-            if (resultStr.indexOf("메모작성")>-1){}
-            else if(resultStr.indexOf("메모수정")>-1){}
+            if (resultStr.indexOf("메모작성")>-1){
+                setBackground("#93db58");
+            }
+            else if(resultStr.indexOf("메모수정")>-1){
+                setBackground("#93db58");
+            }
             else autoStart();
 
         }
@@ -381,5 +389,8 @@ public class memolistActivity extends AppCompatActivity {
             }
 
         }
+    }
+    public void setBackground(String color){
+        button.setBackgroundColor(Color.parseColor(color));
     }
 }

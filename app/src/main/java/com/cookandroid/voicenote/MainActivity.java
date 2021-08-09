@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Color;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import android.speech.RecognitionListener;
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public void onClick(View view) {
                 mRecognizer.startListening(i);
+                setBackground("#ff1f4f");
             }
         });
 
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         //메모 완료 후 저장버튼
         // 한번->음성출력
         // 두번->저장 후 뒤로가기
+        // 기본 -> 초록 (#93db58), 음성인식 중 -> 빨강 (#ff1f4f), 음성재생 중 -> 파랑 (#56a8db)
         mainbutton= findViewById(R.id.mainbutton);
         mainbutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void speakOut(){
+        setBackground("#56a8db");
         String text=editText.getText().toString();
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
@@ -268,6 +272,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public void run() {
                 logobutton.performClick();
+                setBackground("#ff1f4f");
             }
         },2000);
     }
@@ -294,5 +299,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         }, 5000);
         finish();
+    }
+
+    public void setBackground(String color){
+        mainbutton.setBackgroundColor(Color.parseColor(color));
     }
 }
