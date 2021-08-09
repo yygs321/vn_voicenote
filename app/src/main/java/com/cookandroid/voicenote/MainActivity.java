@@ -286,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return (new StringBuffer(s)).reverse().toString();
     }
 
+    
     @Override
     public void onDestroy(){
         if(tts!=null){
