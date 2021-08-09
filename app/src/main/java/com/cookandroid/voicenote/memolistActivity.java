@@ -267,6 +267,11 @@ public class memolistActivity extends AppCompatActivity {
             else if(resultStr.indexOf("취소")>-1){
                 funcVoiceOut("음성인식을 취소합니다");
             }
+            else if(resultStr.indexOf("검색")>-1){
+                funcVoiceOut("검색 화면으로 이동합니다");
+                Intent intent = new Intent(memolistActivity.this, searchActivity.class);
+                startActivityForResult(intent, 0);
+            }
 
         }
     };
