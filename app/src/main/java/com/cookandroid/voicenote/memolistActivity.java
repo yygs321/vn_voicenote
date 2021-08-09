@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.speech.RecognitionListener;
@@ -21,6 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
@@ -56,6 +60,7 @@ public class memolistActivity extends AppCompatActivity {
     Intent intent;
 
     SQLiteHelper dbHelper;
+
 
     RecyclerView recyclerView;
     RecyclerAdapter recyclerAdapter;
@@ -116,12 +121,14 @@ public class memolistActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mRecognizer.startListening(i);
+                setBackground("#ff1f4f");
             }
         });
 
 
         //자동 음성인식 실행
         autoStart();
+
     }
 
     private void autoStart(){
@@ -129,6 +136,7 @@ public class memolistActivity extends AppCompatActivity {
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                setBackground("#ff1f4f");
                 button3.performClick();
             }
         },2000);
@@ -181,7 +189,7 @@ public class memolistActivity extends AppCompatActivity {
                     message = "알 수 없는 오류임";
                     break;
             }
-            Toast.makeText(getApplicationContext(), "에러가 발생하였습니다. : " +
+            Toast.makeText(getApplicationContext(), "에러 발생: " +
                     message,Toast.LENGTH_SHORT).show();
         }
 
@@ -200,7 +208,15 @@ public class memolistActivity extends AppCompatActivity {
             resultStr = resultStr.replace(" ","");
             actionActivity(resultStr);
 
-            autoStart();
+            //다른 화면 넘어가면 음성인식 실행 하지 않도록
+            if (resultStr.indexOf("메모작성")>-1){
+                setBackground("#93db58");
+            }
+            else if(resultStr.indexOf("메모수정")>-1){
+                setBackground("#93db58");
+            }
+            else autoStart();
+
         }
         @Override
         public void onPartialResults(Bundle partialResults) {}
@@ -211,20 +227,21 @@ public class memolistActivity extends AppCompatActivity {
             if(resultStr.indexOf("메모작성")>-1){
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
-                //메모작성 후 음성인식 반복
+                //메모작성 후 음성인식 반복 정지
             }
-            else if(resultStr.indexOf("메모 검색")>-1){
+            else if(resultStr.indexOf("메모수정")>-1){
                 Toast.makeText(getApplicationContext(),"메모 검색 명령어 인식",Toast.LENGTH_SHORT).show();
             }
-            else if(resultStr.indexOf("전체 삭제")>-1){
+            else if(resultStr.indexOf("전체삭제")>-1){
                 Toast.makeText(getApplicationContext(),"전체 삭제 명령어 인식",Toast.LENGTH_LONG).show();
 
+                dbHelper.deleteAll();
+                //삭제 후 음성인식 재 실행
+                autoStart();
             }
 
         }
     };
-
-
 
 
     public static String reverseString(String s){
@@ -372,5 +389,8 @@ public class memolistActivity extends AppCompatActivity {
             }
 
         }
+    }
+    public void setBackground(String color){
+        button.setBackgroundColor(Color.parseColor(color));
     }
 }

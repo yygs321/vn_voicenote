@@ -22,6 +22,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import android.graphics.Color;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -145,6 +147,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
             public boolean onLongClick(View view) {
                 click=1;
                 funcVoiceOut("음성인식을 수정합니다.");
+                setBackground("#ff1f4f");
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -183,6 +186,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
             @Override
             public void run() {
                 logobutton.performClick();
+                setBackground("#ff1f4f");
             }
         },2000);
     }
@@ -382,7 +386,12 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
     //메모장에 적힌 텍스트 받아서 음성으로 출력
     private void speakOut(){
+        setBackground("#56a8db");
         String text=et1.getText().toString();
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    public void setBackground(String color){
+        button.setBackgroundColor(Color.parseColor(color));
     }
 }
