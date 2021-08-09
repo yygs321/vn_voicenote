@@ -346,7 +346,6 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 startActivityForResult(intent, 101);
                 funcVoiceOut("메모수정이 취소되었습니다");
             }
-            speakOut();
         }
     };
     public static String reverseString(String s){

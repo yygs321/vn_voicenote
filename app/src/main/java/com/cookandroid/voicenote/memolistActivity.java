@@ -424,10 +424,8 @@ public class memolistActivity extends AppCompatActivity {
     public void funcVoiceOut(String OutMsg) {
         if (OutMsg.length() < 1) return;
 
-
         if(!tts.isSpeaking()){
             tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
         }
-
     }
 }

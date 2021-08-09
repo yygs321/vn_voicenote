@@ -344,9 +344,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void funcVoiceOut(String OutMsg) {
         if (OutMsg.length() < 1) return;
 
-        tts.setPitch(1.0f); //목소리 통 1.0
-        tts.setSpeechRate(1.0f); //목소리 속도
-        tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
-
+        if(!tts.isSpeaking()){
+            tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
+        }
     }
 }
