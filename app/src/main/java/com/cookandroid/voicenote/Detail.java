@@ -378,17 +378,6 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
         }
     }
 
-    //입력받은 음성에서 조건에 따라 실행(부분 수정, 완전 수정 나눠야하는부분)
-    /*public void modifyActivity(String resultStr){
-
-        if(resultStr.indexOf("전체 수정") >-1){
-            String guideStr ="전체 수정을 시작합니다.";
-            Toast.makeText(getApplicationContext(), guideStr, Toast.LENGTH_SHORT).show();
-            funcVoiceOut(guideStr);
-            speechStart();
-        }
-    }*/
-
     //음성 문자열 함수에 직접 받아서 음성출력
     public void funcVoiceOut(String OutMsg){
         if(OutMsg.length()<1) return;
