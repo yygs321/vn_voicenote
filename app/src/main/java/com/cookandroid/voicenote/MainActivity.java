@@ -73,7 +73,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mRecognizer.setRecognitionListener(listener);
 
-        tts= new TextToSpeech(this, this);
+        //TTS 객체 생성, 초기화
+        tts= new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status!= TextToSpeech.ERROR){
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
 
 
         //로고버튼: 음성인식
@@ -98,13 +106,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mainbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //한번 클릭
                 if( System.currentTimeMillis() > delay ) {
                     delay = System.currentTimeMillis() + 200;
                     speakOut();
                     return;
                 }
+                //더블 클릭
                 if(System.currentTimeMillis() <= delay) {
                     saveMemo();
+                    funcVoiceOut("저장이 완료되었습니다");
                 }
                 else {
                     mRecognizer.startListening(i);
@@ -148,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     message = "네트웍 타임아웃";
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
-                    message = "찾을 수 없음";
+                    message = "시간 초과";
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                     message = "RECOGNIZER가 바쁨";
@@ -157,33 +168,36 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     message = "서버가 이상함";
                     break;
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    message = "말하는 시간초과";
+                    message = "시간 초과";
                     break;
                 default:
                     message = "알 수 없는 오류임";
                     break;
             }
             Toast.makeText(getApplicationContext(), "에러 발생: " +
-                    message,Toast.LENGTH_SHORT).show(); }
+                    message,Toast.LENGTH_SHORT).show();
+            funcVoiceOut("에러 발생 "+message);
+    }
 
-            @Override
-            public void onResults(Bundle results) {
-                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+    @Override
+    public void onResults(Bundle results) {
+            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-                String resultStr = "";
+            String resultStr = "";
 
-                for(int i = 0; i < matches.size() ; i++){
-                    editText.setText(matches.get(i));
-                    resultStr += matches.get(i);
-                }
-                if(resultStr.length()<1) return;
-                resultStr = resultStr.replace(" ","");
-                actionActivity(resultStr);
-
-
-                //2초 후 자동 음성인식 실행
-                autoStart();
+            for(int i = 0; i < matches.size() ; i++){
+                editText.setText(matches.get(i));
+                resultStr += matches.get(i);
             }
+            if(resultStr.length()<1) return;
+            resultStr = resultStr.replace(" ","");
+            actionActivity(resultStr);
+
+            //"저장", "취소"가 아닐 때만 반복
+        if (resultStr.indexOf("저장")>-1){}
+        else if(resultStr.indexOf("취소")>-1){}
+        else autoStart();
+    }
         @Override
         public void onPartialResults(Bundle partialResults) {}
         @Override
@@ -191,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         public void actionActivity(String resultStr){
             if(resultStr.indexOf("다시쓰기")>-1){
+                funcVoiceOut("메모를 처음부터 다시 작성합니다");
                 editText.setText(null);
             }
             else if(resultStr.indexOf("절반지우기")>-1){
@@ -215,22 +230,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 String imsi1 = imsi.substring(0, idx);
                 editText.setText(imsi1);
             }
+            else if(resultStr.indexOf("메모 읽기")>-1) {
+                speakOut();
+            }
             else if(resultStr.indexOf("취소")>-1) {
+                funcVoiceOut("메모 작성이 취소되었습니다");
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
             }
             speakOut();
 
             if(resultStr.indexOf("저장")>-1){
-                /*
-                int a = Integer.parseInt(et3.getText().toString());
-                 */
+                funcVoiceOut("메모를 저장합니다");
+                tts.playSilence(1000, TextToSpeech.QUEUE_ADD, null);
                 saveMemo();
-
-
             }
 
         }
+
     };
     public static String reverseString(String s){
         return (new StringBuffer(s)).reverse().toString();
@@ -273,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },2000);
+        },2500);
     }
 
     //메모 저장
@@ -296,11 +313,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             public void run() {
                 finish();
             }
-        }, 5000);
-        finish();
+        }, 4000);
     }
 
     public void setBackground(String color){
         mainbutton.setBackgroundColor(Color.parseColor(color));
+    }
+
+    //음성 문자열 함수에 직접 받아서 음성출력
+    public void funcVoiceOut(String OutMsg) {
+        if (OutMsg.length() < 1) return;
+
+        tts.setPitch(1.0f); //목소리 통 1.0
+        tts.setSpeechRate(1.0f); //목소리 속도
+        tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
+
     }
 }

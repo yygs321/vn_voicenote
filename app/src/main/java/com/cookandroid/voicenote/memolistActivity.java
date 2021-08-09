@@ -61,7 +61,7 @@ public class memolistActivity extends AppCompatActivity {
 
     SQLiteHelper dbHelper;
 
-
+    TextToSpeech tts;
     RecyclerView recyclerView;
     RecyclerAdapter recyclerAdapter;
 
@@ -76,12 +76,14 @@ public class memolistActivity extends AppCompatActivity {
 
     Button button;
     Button button3;
+    int buttonOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.memolist);
 
+        //음성인식
         i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
@@ -89,6 +91,19 @@ public class memolistActivity extends AppCompatActivity {
         mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mRecognizer.setRecognitionListener(listener);
 
+
+        //TTS 객체 생성, 초기화
+        tts= new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status!= TextToSpeech.ERROR){
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
+
+        //메모리스트 화면으로 오면 0으로 초기화하여 자동음성인식 가능하게함
+        buttonOn=0;
 
         if ( Build.VERSION.SDK_INT >= 23 ){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
@@ -112,6 +127,8 @@ public class memolistActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
+                //작성하기 버튼 클릭시 음성인식되지 않도록
+                buttonOn=1;
             }
         });
 
@@ -125,28 +142,29 @@ public class memolistActivity extends AppCompatActivity {
             }
         });
 
-
-        //자동 음성인식 실행
         autoStart();
 
     }
 
     private void autoStart(){
-        //2초 후 자동 음성인식 실행
-        new android.os.Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setBackground("#ff1f4f");
-                button3.performClick();
-            }
-        },2000);
+        if(buttonOn!=1) {
+            //2초 후 자동 음성인식 실행
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setBackground("#ff1f4f");
+                    button3.performClick();
+                }
+            }, 2500);
+        }
     }
 
     private RecognitionListener listener = new RecognitionListener()
     {
         @Override
         public void onReadyForSpeech(Bundle params) {
-            Toast.makeText(getApplicationContext(),"음성인식을 시작합니다.",Toast.LENGTH_SHORT).show();
+            String msg="음성인식을 시작합니다.";
+            Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
         }
         @Override
         public void onBeginningOfSpeech() {}
@@ -174,7 +192,7 @@ public class memolistActivity extends AppCompatActivity {
                     message = "네트웍 타임아웃";
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
-                    message = "찾을 수 없음";
+                    message = "시간 초과";
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                     message = "RECOGNIZER가 바쁨";
@@ -183,7 +201,7 @@ public class memolistActivity extends AppCompatActivity {
                     message = "서버가 이상함";
                     break;
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    message = "말하는 시간초과";
+                    message = "시간 초과";
                     break;
                 default:
                     message = "알 수 없는 오류임";
@@ -191,6 +209,7 @@ public class memolistActivity extends AppCompatActivity {
             }
             Toast.makeText(getApplicationContext(), "에러 발생: " +
                     message,Toast.LENGTH_SHORT).show();
+            funcVoiceOut("에러 발생 "+message);
         }
 
 
@@ -215,6 +234,8 @@ public class memolistActivity extends AppCompatActivity {
             else if(resultStr.indexOf("메모수정")>-1){
                 setBackground("#93db58");
             }
+            else if(resultStr.indexOf("취소")>-1){
+            }
             else autoStart();
 
         }
@@ -225,19 +246,27 @@ public class memolistActivity extends AppCompatActivity {
 
         public void actionActivity(String resultStr){
             if(resultStr.indexOf("메모작성")>-1){
+                funcVoiceOut("메모 작성 화면으로 이동합니다");
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
                 //메모작성 후 음성인식 반복 정지
             }
             else if(resultStr.indexOf("메모수정")>-1){
-                Toast.makeText(getApplicationContext(),"메모 검색 명령어 인식",Toast.LENGTH_SHORT).show();
+                funcVoiceOut("메모를 수정합니다");
+                Toast.makeText(getApplicationContext(),"메모 수정 명령어 인식",Toast.LENGTH_SHORT).show();
             }
             else if(resultStr.indexOf("전체삭제")>-1){
-                Toast.makeText(getApplicationContext(),"전체 삭제 명령어 인식",Toast.LENGTH_LONG).show();
 
                 dbHelper.deleteAll();
-                //삭제 후 음성인식 재 실행
-                autoStart();
+                funcVoiceOut("전체 삭제가 완료되었습니다");
+                //이전 화면 닫기
+                finish();
+                //전체 삭제 반영된 화면 띄우기
+                Intent intent = new Intent(getBaseContext(), memolistActivity.class);
+                startActivity(intent);
+            }
+            else if(resultStr.indexOf("취소")>-1){
+                funcVoiceOut("음성인식을 취소합니다");
             }
 
         }
@@ -392,5 +421,16 @@ public class memolistActivity extends AppCompatActivity {
     }
     public void setBackground(String color){
         button.setBackgroundColor(Color.parseColor(color));
+    }
+
+    //음성 문자열 함수에 직접 받아서 음성출력
+    public void funcVoiceOut(String OutMsg) {
+        if (OutMsg.length() < 1) return;
+
+
+        if(!tts.isSpeaking()){
+            tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
+        }
+
     }
 }
