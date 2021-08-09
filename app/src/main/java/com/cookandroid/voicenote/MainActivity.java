@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     SpeechRecognizer mRecognizer;
     Intent i;
 
-
-
     final int PERMISSION = 1;
 
     long delay;
@@ -61,11 +59,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         editText = (EditText) findViewById(R.id.editText);
 
-        /*
-        et3 = (TextView)findViewById(R.id.textView3);
-        int no = intent.getExtras().getInt("no");
-        et3.setText(String.valueOf(no));
-        */
         i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
@@ -73,8 +66,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mRecognizer.setRecognitionListener(listener);
 
-        tts= new TextToSpeech(this, this);
-
+        //TTS 객체 생성, 초기화
+        tts= new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status!= TextToSpeech.ERROR){
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
 
         //로고버튼: 음성인식
         logobutton= findViewById(R.id.logobutton);
@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 //더블 클릭
                 if(System.currentTimeMillis() <= delay) {
                     saveMemo();
+                    funcVoiceOut("저장이 완료되었습니다");
                 }
                 else {
                     mRecognizer.startListening(i);
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     message = "네트웍 타임아웃";
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
-                    message = "찾을 수 없음";
+                    message = "시간 초과";
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                     message = "RECOGNIZER가 바쁨";
@@ -159,34 +160,36 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     message = "서버가 이상함";
                     break;
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    message = "말하는 시간초과";
+                    message = "시간 초과";
                     break;
                 default:
                     message = "알 수 없는 오류임";
                     break;
             }
             Toast.makeText(getApplicationContext(), "에러 발생: " +
-                    message,Toast.LENGTH_SHORT).show(); }
+                    message,Toast.LENGTH_SHORT).show();
+            funcVoiceOut("에러 발생 "+message);
+    }
 
-            @Override
-            public void onResults(Bundle results) {
-                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+    @Override
+    public void onResults(Bundle results) {
+            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-                String resultStr = "";
+            String resultStr = "";
 
-                for(int i = 0; i < matches.size() ; i++){
-                    editText.setText(matches.get(i));
-                    resultStr += matches.get(i);
-                }
-                if(resultStr.length()<1) return;
-                resultStr = resultStr.replace(" ","");
-                actionActivity(resultStr);
-
-                //"저장", "취소"가 아닐 때만 반복
-                if (resultStr.indexOf("저장")>-1){}
-                else if(resultStr.indexOf("취소")>-1){}
-                else autoStart();
+            for(int i = 0; i < matches.size() ; i++){
+                editText.setText(matches.get(i));
+                resultStr += matches.get(i);
             }
+            if(resultStr.length()<1) return;
+            resultStr = resultStr.replace(" ","");
+            actionActivity(resultStr);
+
+            //"저장", "취소"가 아닐 때만 반복
+        if (resultStr.indexOf("저장")>-1){}
+        else if(resultStr.indexOf("취소")>-1){}
+        else autoStart();
+    }
         @Override
         public void onPartialResults(Bundle partialResults) {}
         @Override
@@ -194,9 +197,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         public void actionActivity(String resultStr){
             if(resultStr.indexOf("다시쓰기")>-1){
-                editText.setText(null);
-            }
-            if(resultStr.indexOf("다시쓰기")>-1){
+                funcVoiceOut("메모를 처음부터 다시 작성합니다");
                 editText.setText(null);
             }
             else if(resultStr.indexOf("절반지우기")>-1){
@@ -237,56 +238,32 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 imsi1 = reverseString(imsi1);
                 editText.setText(imsi1);
             }
+            else if(resultStr.indexOf("메모 읽기")>-1) {
+                speakOut();
+            }
             else if(resultStr.indexOf("삭제")>-1) {
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
             }
             else if(resultStr.indexOf("저장")>-1) {
-                String str=editText.getText().toString();
-                //메모에 하나라도 썼을 경우에만 실행
-                if(str.length()>0) {
-                    //날짜
-                    Date date = new Date();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-                    String substr = sdf.format(date);
-
-                    //입력받은 메모 리스트로 보내기
-                    Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
-                    intent1.putExtra("main", str);
-                    intent1.putExtra("sub", substr);
-                    setResult(200, intent1);
-                    speakOut();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            finish();
-                        }
-                    }, 5000);
-                }
+                saveMemo();
             }
-            else if(resultStr.indexOf("이동")>-1) {
+            else if(resultStr.indexOf("취소")>-1) {
+                funcVoiceOut("메모 작성이 취소되었습니다");
                 editText.setText(null);//이동은 잘되는데 원래 텍스트+이동 을 자꾸 다시 읽어서 아예 null처리
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
             }
             speakOut();
 
-            if(resultStr.indexOf("저장")>-1){
-                /*
-                int a = Integer.parseInt(et3.getText().toString());
-                 */
-                saveMemo();
-            }
-
         }
+
     };
     public static String reverseString(String s){
         return (new StringBuffer(s)).reverse().toString();
     }
 
-    
+
     @Override
     public void onDestroy(){
         if(tts!=null){
@@ -324,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },2000);
+        },2500);
     }
 
     //메모 저장
@@ -332,26 +309,44 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         //입력받은 메모 리스트로 보내기
         String str=editText.getText().toString();
 
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if(str.length()>0) {
+            //날짜
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        String substr = sdf.format(date);
+            String substr = sdf.format(date);
 
-        Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
-        intent1.putExtra("main", str);
-        intent1.putExtra("sub", substr);
-        setResult(200, intent1);
-        speakOut();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 5000);
-        finish();
+            //입력받은 메모 리스트로 보내기
+            Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
+            intent1.putExtra("main", str);
+            intent1.putExtra("sub", substr);
+            setResult(200, intent1);
+
+            funcVoiceOut("메모를 저장합니다");
+            tts.playSilence(1000, TextToSpeech.QUEUE_ADD, null);
+
+            speakOut();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    finish();
+                }
+            }, 5000);
+        }
     }
 
     public void setBackground(String color){
         mainbutton.setBackgroundColor(Color.parseColor(color));
+    }
+
+    //음성 문자열 함수에 직접 받아서 음성출력
+    public void funcVoiceOut(String OutMsg) {
+        if (OutMsg.length() < 1) return;
+
+        tts.setPitch(1.0f); //목소리 통 1.0
+        tts.setSpeechRate(1.0f); //목소리 속도
+        tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
+
     }
 }

@@ -96,8 +96,18 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
         sttIntent= new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         sttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+
         //TTS 객체 생성, 초기화
-        tts= new TextToSpeech(this,this);
+        tts= new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status!= TextToSpeech.ERROR){
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
+
+        autoStart();
 
         //버튼 이벤트
         button.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +119,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                     speakOut();
                     return;
                 }
+                //더블 클릭시 저장
                 if(System.currentTimeMillis() <= delay) {
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -140,40 +151,20 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
             }
         });
 
-        //버튼 길게 누르면 수정
-        button.setOnLongClickListener(new View.OnLongClickListener() {
 
-            @Override
-            public boolean onLongClick(View view) {
-                click=1;
-                funcVoiceOut("음성인식을 수정합니다.");
-                setBackground("#ff1f4f");
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        //롱클릭이랑 클릭이 겹치지 않도록
-                        click=0;
-                        mRecognizer= SpeechRecognizer.createSpeechRecognizer(mContext);
-                        mRecognizer.setRecognitionListener(listener); //음성인식 리스너 등록
-                        mRecognizer.startListening(sttIntent);
-                        //intent값을 String으로 변경
-                        String answer= sttIntent.toUri(URI_INTENT_SCHEME);
-                        //modifyActivity(answer);
-                    }
-                }, 1000);  // 1 초 후에 실행
-
-                return false;
-            }
-
-        });
-
-        //로고 버튼: 리스트로 이동
+        //로고 버튼: 음성인식
         logobutton= findViewById(R.id.logobutton);
         logobutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRecognizer.startListening(i);
+                funcVoiceOut("메모를 수정합니다.");
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setBackground("#ff1f4f");
+                        mRecognizer.startListening(i);
+                    }
+                },2500);
             }
         });
 
@@ -188,7 +179,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },2000);
+        },3500);
     }
 
     private void speechStart(){
@@ -202,7 +193,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
         @Override
         public void onReadyForSpeech(Bundle bundle) {
-            Toast.makeText(getApplicationContext(), "음성인식을 수정합니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "음성인식을 실행합니다.", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -235,15 +226,14 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                     message = "퍼미션 없음";
                     break;
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    message = "말하는 시간 초과";
+                    message = "시간 초과";
                     break;
                 default:
-                    message = "";
+                    message = "시간 초과";
                     break;
             }
-            String guideStr = "수정 취소";
-            Toast.makeText(getApplicationContext(), guideStr + message, Toast.LENGTH_SHORT).show();
-            funcVoiceOut(guideStr);
+            Toast.makeText(getApplicationContext(), "에러 발생:" + message, Toast.LENGTH_SHORT).show();
+            funcVoiceOut("에러 발생 "+message);
         }
 
         @Override
@@ -260,7 +250,15 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
             actionActivity(resultStr);
 
-            autoStart();
+            //저장, 이동, 삭제가 아닐 때만 반복
+            if (resultStr.indexOf("저장")>-1){}
+            else if(resultStr.indexOf("취소")>-1){}
+            else if(resultStr.indexOf("삭제")>-1){}
+            else {
+                speakOut();
+                autoStart();
+            }
+
         }
 
         @Override
@@ -312,11 +310,16 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 imsi1 = reverseString(imsi1);
                 et1.setText(imsi1);
             }
+
+            else if(resultStr.indexOf("메모 읽기")>-1) {
+                speakOut();
+            }
             else if(resultStr.indexOf("삭제")>-1) {
                 int a = Integer.parseInt(et3.getText().toString());
                 dbHelper.deleteMemo(a);
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
+                funcVoiceOut("메모가 삭제되었습니다");
             }
             else if(resultStr.indexOf("저장")>-1) {
                 int a = Integer.parseInt(et3.getText().toString());
@@ -326,12 +329,22 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 imsi = reverseString(imsi);
                 dbHelper.updateMemo(a, imsi);
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
-                startActivityForResult(intent, 101);
+                speakOut(); //수정된 메모 읽어주기
+
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivityForResult(intent, 101);
+                        funcVoiceOut("메모가 저장되었습니다");
+                    }
+                },3000);
+
             }
-            else if(resultStr.indexOf("이동")>-1) {
+            else if(resultStr.indexOf("취소")>-1) {
                 et1.setText(null);//이동은 잘되는데 원래 텍스트+이동 을 자꾸 다시 읽어서 아예 null처리
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
+                funcVoiceOut("메모수정이 취소되었습니다");
             }
             speakOut();
         }
@@ -364,17 +377,6 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
             Log.e("TTS","Initilization Failed!");
         }
     }
-
-    //입력받은 음성에서 조건에 따라 실행(부분 수정, 완전 수정 나눠야하는부분)
-    /*public void modifyActivity(String resultStr){
-
-        if(resultStr.indexOf("전체 수정") >-1){
-            String guideStr ="전체 수정을 시작합니다.";
-            Toast.makeText(getApplicationContext(), guideStr, Toast.LENGTH_SHORT).show();
-            funcVoiceOut(guideStr);
-            speechStart();
-        }
-    }*/
 
     //음성 문자열 함수에 직접 받아서 음성출력
     public void funcVoiceOut(String OutMsg){
