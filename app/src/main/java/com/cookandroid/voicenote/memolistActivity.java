@@ -233,6 +233,8 @@ public class memolistActivity extends AppCompatActivity {
             }
             else if(resultStr.indexOf("취소")>-1){
             }
+            else if(resultStr.indexOf("전체삭제")>-1){
+            }
             else autoStart();
 
         }
