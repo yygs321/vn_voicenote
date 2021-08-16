@@ -73,7 +73,7 @@ public class searchActivity extends AppCompatActivity
 
         }
 
-        
+
         @Override
         public void onError(int error) {
             String message;

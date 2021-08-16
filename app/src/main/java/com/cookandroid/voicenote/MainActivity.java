@@ -173,12 +173,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @Override
     public void onResults(Bundle results) {
+
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
             String resultStr = "";
 
             for(int i = 0; i < matches.size() ; i++){
-                editText.setText(matches.get(i));
+                editText.append(matches.get(i));
                 resultStr += matches.get(i);
             }
             if(resultStr.length()<1) return;
@@ -308,6 +309,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void saveMemo(){
         //입력받은 메모 리스트로 보내기
         String str=editText.getText().toString();
+        str = reverseString(str);
+        str = str.substring(2);
+        str = reverseString(str);
+        editText.setText(str);
 
         if(str.length()>0) {
             //날짜
@@ -324,6 +329,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
             funcVoiceOut("메모를 저장합니다");
             tts.playSilence(1000, TextToSpeech.QUEUE_ADD, null);
+
+            Intent intent = new Intent(getApplicationContext(), LoadingActivity.class);
+            startActivityForResult(intent, 101);
 
             speakOut();
             new Handler().postDelayed(new Runnable() {
