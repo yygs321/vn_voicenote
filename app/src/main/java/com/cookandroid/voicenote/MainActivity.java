@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },2500);
+        },3000);
     }
 
     //메모 저장
@@ -330,8 +330,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             funcVoiceOut("메모를 저장합니다");
             tts.playSilence(1000, TextToSpeech.QUEUE_ADD, null);
 
-            Intent intent = new Intent(getApplicationContext(), LoadingActivity.class);
-            startActivityForResult(intent, 101);
 
             speakOut();
             new Handler().postDelayed(new Runnable() {
