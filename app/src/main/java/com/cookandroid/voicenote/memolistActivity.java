@@ -175,33 +175,43 @@ public class memolistActivity extends AppCompatActivity {
             switch (error) {
                 case SpeechRecognizer.ERROR_AUDIO:
                     message = "오디오 에러";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_CLIENT:
                     message = "클라이언트 에러";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
                     message = "퍼미션 없음";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_NETWORK:
                     message = "네트워크 에러";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
                     message = "네트웍 타임아웃";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
                     message = "시간 초과";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                     message = "RECOGNIZER가 바쁨";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_SERVER:
                     message = "서버가 이상함";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
                     message = "시간 초과";
+                    setBackground("#93db58");
                     break;
                 default:
                     message = "알 수 없는 오류임";
+                    setBackground("#93db58");
                     break;
             }
             Toast.makeText(getApplicationContext(), "에러 발생: " +
@@ -232,8 +242,10 @@ public class memolistActivity extends AppCompatActivity {
                 setBackground("#93db58");
             }
             else if(resultStr.indexOf("취소")>-1){
+                setBackground("#93db58");
             }
             else if(resultStr.indexOf("전체삭제")>-1){
+                setBackground("#93db58");
             }
             else autoStart();
 
@@ -246,16 +258,18 @@ public class memolistActivity extends AppCompatActivity {
         public void actionActivity(String resultStr){
             if(resultStr.indexOf("메모작성")>-1){
                 funcVoiceOut("메모 작성 화면으로 이동합니다");
+                setBackground("#93db58");
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
                 //메모작성 후 음성인식 반복 정지
             }
             else if(resultStr.indexOf("메모수정")>-1){
                 funcVoiceOut("메모를 수정합니다");
+                setBackground("#93db58");
                 Toast.makeText(getApplicationContext(),"메모 수정 명령어 인식",Toast.LENGTH_SHORT).show();
             }
             else if(resultStr.indexOf("전체삭제")>-1){
-
+                setBackground("#93db58");
                 dbHelper.deleteAll();
                 funcVoiceOut("전체 삭제가 완료되었습니다");
                 //이전 화면 닫기
@@ -265,9 +279,11 @@ public class memolistActivity extends AppCompatActivity {
                 startActivity(intent);
             }
             else if(resultStr.indexOf("취소")>-1){
+                setBackground("#93db58");
                 funcVoiceOut("음성인식을 취소합니다");
             }
             else if(resultStr.indexOf("검색")>-1){
+                setBackground("#93db58");
                 funcVoiceOut("검색 화면으로 이동합니다");
                 Intent intent = new Intent(memolistActivity.this, searchActivity.class);
                 startActivityForResult(intent, 0);
