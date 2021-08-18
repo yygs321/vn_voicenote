@@ -23,6 +23,7 @@
         <activity android:name=".memolistActivity"></activity>
         <activity android:name=".Detail"/>
         <activity android:name=".searchActivity"></activity>
+        <activity android:name=".Search"></activity>
         <activity android:name=".helpActivity" android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
 
     </application>
