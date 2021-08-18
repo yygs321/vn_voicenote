@@ -24,8 +24,7 @@ public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_food,null);
-        ViewHolder viewHolder=new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
@@ -33,8 +32,9 @@ public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder
 
         Memo memo = MemoArrayList.get(position);
         holder.text.setText(memo.getMaintext());
-
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -46,7 +46,7 @@ public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    
+
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView text;
