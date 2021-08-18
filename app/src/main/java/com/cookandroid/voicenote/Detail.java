@@ -157,7 +157,6 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
         logobutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                funcVoiceOut("메모를 수정합니다.");
                 new android.os.Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -172,6 +171,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
     //자동 음성인식
     private void autoStart(){
+        funcVoiceOut("메모 수정");
         //2초 후 자동 음성인식 실행
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
@@ -179,7 +179,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },3500);
+        },3000);
     }
 
     private void speechStart(){
@@ -254,10 +254,9 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
             if (resultStr.indexOf("저장")>-1){}
             else if(resultStr.indexOf("취소")>-1){}
             else if(resultStr.indexOf("삭제")>-1){}
-            else {
-                speakOut();
-                autoStart();
-            }
+            else if(resultStr.indexOf("메모읽기")>-1){}
+            else autoStart();
+
 
         }
 
@@ -310,9 +309,35 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 imsi1 = reverseString(imsi1);
                 et1.setText(imsi1);
             }
+            else if(resultStr.indexOf("띄어쓰기")>-1){
+                String str=et1.getText().toString();
+                str = reverseString(str);
+                str = str.substring(4);
+                str = reverseString(str);
+                et1.setText(str+" ");
 
-            else if(resultStr.indexOf("메모 읽기")>-1) {
+            }
+            else if(resultStr.indexOf("한줄띄우기")>-1){
+                String str=et1.getText().toString();
+                str = reverseString(str);
+                str = str.substring(6);
+                str = reverseString(str);
+                et1.setText(str+"\n");
+            }
+            else if(resultStr.indexOf("메모읽기")>-1) {
+                String str=et1.getText().toString();
+                str = reverseString(str);
+                str = str.substring(5);
+                str = reverseString(str);
+                et1.setText(str);
+
                 speakOut();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        autoStart();
+                    }
+                }, 4000);
             }
             else if(resultStr.indexOf("삭제")>-1) {
                 int a = Integer.parseInt(et3.getText().toString());
