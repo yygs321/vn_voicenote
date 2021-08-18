@@ -39,16 +39,15 @@
         android:background="@drawable/logo2" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/helpbutton"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_alignParentTop="true"
         android:layout_marginLeft="280dp"
         android:layout_marginTop="16dp"
-/>
+        android:onClick="mOnPopupClick"/>
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/searchbutton"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
