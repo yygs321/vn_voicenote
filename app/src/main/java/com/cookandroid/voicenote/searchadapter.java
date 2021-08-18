@@ -46,6 +46,7 @@ public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder
         notifyDataSetChanged();
     }
 
+    
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView text;
@@ -53,7 +54,7 @@ public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.text=itemView.findViewById(R.id.text);
+            text=itemView.findViewById(R.id.text);
 
         }
     }
