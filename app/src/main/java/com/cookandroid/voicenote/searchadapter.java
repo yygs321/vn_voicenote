@@ -46,6 +46,7 @@ public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder
         notifyDataSetChanged();
     }
 
+    
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView text;
