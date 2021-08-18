@@ -453,10 +453,15 @@ public class memolistActivity extends AppCompatActivity {
         }
     }
 
-    /*public void mOnPopupClick(View v){
+    public void mOnPopupClick(View v){
         Intent intent = new Intent(this, helpActivity.class);
         startActivityForResult(intent, 1);
-    }*/
+    }
+
+    public void mOnSearchClick(View v){
+        Intent intent = new Intent(this, searchActivity.class);
+        startActivityForResult(intent, 1);
+    }
 
     public void setBackground(String color){
         button.setBackgroundColor(Color.parseColor(color));
