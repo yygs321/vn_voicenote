@@ -183,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @Override
     public void onResults(Bundle results) {
-
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
             String resultStr = "";
@@ -192,14 +191,17 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 editText.append(matches.get(i));
                 resultStr += matches.get(i);
             }
-            if(resultStr.length()<1) return;
+            if (resultStr.length()<1) return;
             resultStr = resultStr.replace(" ","");
             actionActivity(resultStr);
 
-            //"저장", "취소"가 아닐 때만 반복
+            //"저장", "취소", "삭제"가 아닐 때만 반복
         if (resultStr.indexOf("저장")>-1){}
         else if(resultStr.indexOf("취소")>-1){}
+        else if(resultStr.indexOf("삭제")>-1){}
+        else if(resultStr.indexOf("메모읽기")>-1){}
         else autoStart();
+
     }
         @Override
         public void onPartialResults(Bundle partialResults) {}
@@ -249,12 +251,40 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 imsi1 = reverseString(imsi1);
                 editText.setText(imsi1);
             }
-            else if(resultStr.indexOf("메모 읽기")>-1) {
+            else if(resultStr.indexOf("띄어쓰기")>-1){
+                String str=editText.getText().toString();
+                str = reverseString(str);
+                str = str.substring(4);
+                str = reverseString(str);
+                editText.setText(str+" ");
+
+            }
+            else if(resultStr.indexOf("한줄띄우기")>-1){
+                String str=editText.getText().toString();
+                str = reverseString(str);
+                str = str.substring(6);
+                str = reverseString(str);
+                editText.setText(str+"\n");
+            }
+            else if(resultStr.indexOf("메모읽기")>-1) {
+                String str=editText.getText().toString();
+                str = reverseString(str);
+                str = str.substring(5);
+                str = reverseString(str);
+                editText.setText(str);
+
                 speakOut();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        autoStart();
+                    }
+                }, 4000);
             }
             else if(resultStr.indexOf("삭제")>-1) {
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
+                funcVoiceOut("메모가 삭제되었습니다");
             }
             else if(resultStr.indexOf("저장")>-1) {
                 saveMemo();
@@ -265,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
             }
-            speakOut();
+
 
         }
 
@@ -312,8 +342,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },2500);
+        },3000);
     }
+
 
     //메모 저장
     private void saveMemo(){
@@ -337,13 +368,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             intent1.putExtra("sub", substr);
             setResult(200, intent1);
 
-            funcVoiceOut("메모를 저장합니다");
-            tts.playSilence(1000, TextToSpeech.QUEUE_ADD, null);
-
-            Intent intent = new Intent(getApplicationContext(), LoadingActivity.class);
-            startActivityForResult(intent, 101);
-
             speakOut();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    funcVoiceOut("저장이 완료되었습니다");
+                }
+            }, 3000);
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
