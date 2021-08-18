@@ -137,33 +137,43 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             switch (error) {
                 case SpeechRecognizer.ERROR_AUDIO:
                     message = "오디오 에러";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_CLIENT:
                     message = "클라이언트 에러";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
                     message = "퍼미션 없음";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_NETWORK:
                     message = "네트워크 에러";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
                     message = "네트웍 타임아웃";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
                     message = "시간 초과";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                     message = "RECOGNIZER가 바쁨";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_SERVER:
                     message = "서버가 이상함";
+                    setBackground("#93db58");
                     break;
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
                     message = "시간 초과";
+                    setBackground("#93db58");
                     break;
                 default:
                     message = "알 수 없는 오류임";
+                    setBackground("#93db58");
                     break;
             }
             Toast.makeText(getApplicationContext(), "에러 발생: " +
@@ -388,5 +398,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if(!tts.isSpeaking()){
             tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
         }
+    }
+
+    public void mOnPopupClick(View v){
+        Intent intent = new Intent(this, helpActivity.class);
+        startActivityForResult(intent, 1);
+    }
+
+    public void mOnSearchClick(View v){
+        Intent intent = new Intent(this, searchActivity.class);
+        startActivityForResult(intent, 1);
     }
 }
