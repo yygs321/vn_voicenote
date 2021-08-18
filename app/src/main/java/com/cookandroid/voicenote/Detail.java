@@ -171,6 +171,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
     //자동 음성인식
     private void autoStart(){
+        funcVoiceOut("메모 수정");
         //2초 후 자동 음성인식 실행
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
@@ -178,7 +179,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },3500);
+        },3000);
     }
 
     private void speechStart(){
