@@ -53,7 +53,7 @@ public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.text=itemView.findViewById(R.id.text);
+            text=itemView.findViewById(R.id.text);
 
         }
     }

@@ -30,6 +30,7 @@ public class Search extends AppCompatActivity {
         dbHelper = new SQLiteHelper(Search.this);
         memoArrayList = dbHelper.selectAll();
 
+
         //어뎁터 연결
         recyclerView = findViewById(R.id.recyclerview);
         searchET = findViewById(R.id.searchMemo);//검색창의 글
@@ -40,6 +41,8 @@ public class Search extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(searchAdapter);
+
+        searchAdapter.notifyDataSetChanged();
 
         searchET.addTextChangedListener(new TextWatcher() {
             @Override
