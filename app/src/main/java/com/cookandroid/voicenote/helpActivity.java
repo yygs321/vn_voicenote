@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +21,9 @@ public class helpActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //화면 세로고정
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         super.onCreate(savedInstanceState);
         //타이틀바 없애기
         requestWindowFeature(Window.FEATURE_NO_TITLE);

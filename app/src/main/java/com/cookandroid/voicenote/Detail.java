@@ -3,6 +3,7 @@ package com.cookandroid.voicenote;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.speech.RecognitionListener;
@@ -55,6 +56,8 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //화면 세로고정
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail);
@@ -121,6 +124,9 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 }
                 //더블 클릭시 저장
                 if(System.currentTimeMillis() <= delay) {
+                    //저장시 메모리스트에서 음성인식되지 않도록
+                    memolistActivity.ButtonOff();
+
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -139,7 +145,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                             finish();
                         }
                     }, 5000);
-                    finish();
+                    funcVoiceOut("수정이 완료되었습니다");
                 }
                 else {
                     mRecognizer.startListening(i);
@@ -171,7 +177,6 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
     //자동 음성인식
     private void autoStart(){
-        funcVoiceOut("메모 수정");
         //2초 후 자동 음성인식 실행
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
@@ -179,7 +184,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },3000);
+        },2500);
     }
 
     private void speechStart(){
@@ -251,10 +256,15 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
             actionActivity(resultStr);
 
             //저장, 이동, 삭제가 아닐 때만 반복
-            if (resultStr.indexOf("저장")>-1){}
-            else if(resultStr.indexOf("취소")>-1){}
-            else if(resultStr.indexOf("삭제")>-1){}
+            if (resultStr.indexOf("저장")>-1){
+                memolistActivity.ButtonOff();
+            }
+            else if(resultStr.indexOf("취소")>-1){
+            }
+            else if(resultStr.indexOf("삭제")>-1){
+            }
             else if(resultStr.indexOf("메모읽기")>-1){}
+            else if(resultStr.indexOf("글로쓰기")>-1){}
             else autoStart();
 
 
@@ -315,7 +325,6 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 str = str.substring(4);
                 str = reverseString(str);
                 et1.setText(str+" ");
-
             }
             else if(resultStr.indexOf("한줄띄우기")>-1){
                 String str=et1.getText().toString();
@@ -352,6 +361,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 imsi = reverseString(imsi);
                 imsi = imsi.substring(2);
                 imsi = reverseString(imsi);
+                et1.setText(imsi);
                 dbHelper.updateMemo(a, imsi);
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 speakOut(); //수정된 메모 읽어주기
@@ -360,7 +370,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                     @Override
                     public void run() {
                         startActivityForResult(intent, 101);
-                        funcVoiceOut("메모가 저장되었습니다");
+                        funcVoiceOut("수정이 완료되었습니다");
                     }
                 },3000);
 
@@ -370,6 +380,15 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
                 funcVoiceOut("메모수정이 취소되었습니다");
+            }
+            else if(resultStr.indexOf("글로쓰기")>-1) {
+                String str=et1.getText().toString();
+                str = reverseString(str);
+                str = str.substring(5);
+                str = reverseString(str);
+                et1.setText(str);
+
+                funcVoiceOut("음성인식이 취소되었습니다");
             }
         }
     };
