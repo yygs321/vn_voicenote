@@ -2,18 +2,15 @@ package com.cookandroid.voicenote;
 
 //STT
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 //TTS
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.os.Bundle;
@@ -27,19 +24,8 @@ import java.util.Locale;
 import java.util.ArrayList;
 
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,13 +34,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class memolistActivity extends AppCompatActivity {
+    private static int buttonOn;
     final int PERMISSION = 1;
     Intent intent;
 
@@ -76,12 +58,18 @@ public class memolistActivity extends AppCompatActivity {
     Button button;
     Button button3;
     Button helpbutton;
-    int buttonOn;
+    Button buttonPos;
+    Button buttonNeg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //화면 세로고정
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.memolist);
+
+        buttonOn=0;
 
         //음성인식
         i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -102,8 +90,6 @@ public class memolistActivity extends AppCompatActivity {
             }
         });
 
-        //메모리스트 화면으로 오면 0으로 초기화하여 자동음성인식 가능하게함
-        buttonOn=0;
 
         if ( Build.VERSION.SDK_INT >= 23 ){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
@@ -128,7 +114,7 @@ public class memolistActivity extends AppCompatActivity {
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
                 //작성하기 버튼 클릭시 음성인식되지 않도록
-                buttonOn=1;
+                ButtonOff();
             }
         });
 
@@ -152,20 +138,21 @@ public class memolistActivity extends AppCompatActivity {
             }
         });
 
+
         autoStart();
 
     }
 
     private void autoStart(){
         if(buttonOn!=1) {
-            //2초 후 자동 음성인식 실행
+            //3.5초 후 자동 음성인식 실행
             new android.os.Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     setBackground("#ff1f4f");
                     button3.performClick();
                 }
-            }, 2500);
+            }, 3500);
         }
     }
 
@@ -260,6 +247,12 @@ public class memolistActivity extends AppCompatActivity {
             else if(resultStr.indexOf("전체삭제")>-1){
                 setBackground("#93db58");
             }
+            else if(resultStr.indexOf("네")>-1){
+                setBackground("#93db58");
+            }
+            else if(resultStr.indexOf("아니요")>-1){
+                setBackground("#93db58");
+            }
             else autoStart();
 
         }
@@ -301,6 +294,16 @@ public class memolistActivity extends AppCompatActivity {
                 Intent intent = new Intent(memolistActivity.this, searchActivity.class);
                 startActivityForResult(intent, 0);
             }
+            else if(resultStr.indexOf("네")>-1){
+                setBackground("#93db58");
+                funcVoiceOut("삭제되었습니다");
+                buttonPos.performClick();
+            }
+            else if(resultStr.indexOf("아니요")>-1){
+                setBackground("#93db58");
+                funcVoiceOut("삭제가 취소되었습니다");
+                buttonNeg.performClick();
+            }
 
         }
     };
@@ -310,6 +313,11 @@ public class memolistActivity extends AppCompatActivity {
         return (new StringBuffer(s)).reverse().toString();
     }
 
+    //처음 시작할때나 다른 화면에서 취소, 삭제로 리스트로 이동했을 때에만 음성인식 실행
+    public static void ButtonOff(){
+        //메모리스트 화면으로 오면 0으로 초기화하여 자동음성인식 가능하게함
+        buttonOn=1;
+    }
 
 
     @Override
@@ -389,6 +397,7 @@ public class memolistActivity extends AppCompatActivity {
                     {
                         //LongClick이랑 중복 안될때만 실행
                         if(click==0) {
+                            funcVoiceOut("메모를 수정합니다");
                             int pos = getAdapterPosition();
                             if (pos != RecyclerView.NO_POSITION) {
                                 Intent intent = new Intent(getApplicationContext(), Detail.class);
@@ -410,12 +419,18 @@ public class memolistActivity extends AppCompatActivity {
                     @Override
                     public boolean onLongClick(View view) {
                         //LongClick이랑 one Click이랑 겹치지 않게 하기 위함
+                        ButtonOff();
                         click=1;
+
+                        funcVoiceOut("정말로 삭제하시겠습니까?");
+                        buttonOn=0;
+                        autoStart();
 
                         AlertDialog.Builder builder= new AlertDialog.Builder(memolistActivity.this);
                         builder.setMessage("정말로 삭제하시겠습니까?");
                         builder.setTitle(("삭제알림창"));
                         builder.setCancelable(false);
+
 
                         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
@@ -445,6 +460,10 @@ public class memolistActivity extends AppCompatActivity {
                         AlertDialog alert= builder.create();
                         alert.setTitle("삭제 알림창");
                         alert.show();
+
+                        buttonPos= alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                        buttonNeg= alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+
                         return false;
                     }
                 });

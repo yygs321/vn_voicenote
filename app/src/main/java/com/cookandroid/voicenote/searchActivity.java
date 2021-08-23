@@ -1,6 +1,7 @@
 package com.cookandroid.voicenote;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -34,6 +35,9 @@ public class searchActivity extends AppCompatActivity
     public searchActivity() {
     }
     protected void onCreate(Bundle savedInstanceState) {
+        //화면 세로고정
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search);
 

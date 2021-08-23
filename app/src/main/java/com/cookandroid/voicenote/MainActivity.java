@@ -7,6 +7,7 @@ import android.Manifest;
 import android.app.UiAutomation;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //화면 세로고정
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -86,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
 
-
         //화면 전환 후 자동 음성인식 실행
         autoStart();
 
@@ -99,15 +103,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public void onClick(View view) {
                 //한번 클릭
+                String str=editText.getText().toString();
                 if( System.currentTimeMillis() > delay ) {
                     delay = System.currentTimeMillis() + 200;
                     speakOut();
-                    return;
+                        return;
+
                 }
+
                 //더블 클릭
                 if(System.currentTimeMillis() <= delay) {
-                    saveMemo();
-                    funcVoiceOut("저장이 완료되었습니다");
+                    //메모리스트로 돌아가서 음성인식되지 않도록
+                    memolistActivity.ButtonOff();
+
+
+                    if(str.length()>0) {
+                        saveMemo();
+                    }
+                    else autoStart();
                 }
                 else {
                     mRecognizer.startListening(i);
@@ -196,10 +209,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             actionActivity(resultStr);
 
             //"저장", "취소", "삭제"가 아닐 때만 반복
-        if (resultStr.indexOf("저장")>-1){}
-        else if(resultStr.indexOf("취소")>-1){}
-        else if(resultStr.indexOf("삭제")>-1){}
+        if (resultStr.indexOf("저장")>-1){
+            memolistActivity.ButtonOff();
+        }
+        else if(resultStr.indexOf("취소")>-1){
+        }
+        else if(resultStr.indexOf("삭제")>-1){
+        }
         else if(resultStr.indexOf("메모읽기")>-1){}
+        else if(resultStr.indexOf("글로쓰기")>-1){}
         else autoStart();
 
     }
@@ -287,13 +305,32 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 funcVoiceOut("메모가 삭제되었습니다");
             }
             else if(resultStr.indexOf("저장")>-1) {
-                saveMemo();
+                //"저장"글자까지 저장되지 않도록
+                String str=editText.getText().toString();
+                str = reverseString(str);
+                str = str.substring(2);
+                str = reverseString(str);
+                editText.setText(str);
+
+                if(str.length()>0) {
+                    saveMemo();
+                }
+                else autoStart();
             }
             else if(resultStr.indexOf("취소")>-1) {
                 funcVoiceOut("메모 작성이 취소되었습니다");
                 editText.setText(null);//이동은 잘되는데 원래 텍스트+이동 을 자꾸 다시 읽어서 아예 null처리
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 startActivityForResult(intent, 101);
+            }
+            else if(resultStr.indexOf("글로쓰기")>-1) {
+                String str=editText.getText().toString();
+                str = reverseString(str);
+                str = str.substring(5);
+                str = reverseString(str);
+                editText.setText(str);
+
+                funcVoiceOut("음성인식을 취소합니다");
             }
 
 
@@ -350,41 +387,35 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void saveMemo(){
         //입력받은 메모 리스트로 보내기
         String str=editText.getText().toString();
-        str = reverseString(str);
-        str = str.substring(2);
-        str = reverseString(str);
-        editText.setText(str);
 
-        if(str.length()>0) {
-            //날짜
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        //날짜
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-            String substr = sdf.format(date);
+        String substr = sdf.format(date);
 
-            //입력받은 메모 리스트로 보내기
-            Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
-            intent1.putExtra("main", str);
-            intent1.putExtra("sub", substr);
-            setResult(200, intent1);
+        //입력받은 메모 리스트로 보내기
+        Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
+        intent1.putExtra("main", str);
+        intent1.putExtra("sub", substr);
+        setResult(200, intent1);
 
-            speakOut();
+        speakOut();
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    funcVoiceOut("저장이 완료되었습니다");
-                }
-            }, 3000);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                funcVoiceOut("저장이 완료되었습니다");
+            }
+        }, 3000);
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
 
-                    finish();
-                }
-            }, 5000);
-        }
+                finish();
+            }
+        }, 5000);
     }
 
     public void setBackground(String color){
