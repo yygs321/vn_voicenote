@@ -161,7 +161,7 @@ public class memolistActivity extends AppCompatActivity {
     {
         @Override
         public void onReadyForSpeech(Bundle params) {
-            String msg="음성인식을 시작합니다.";
+            String msg="메모의 음성인식을 시작합니다.";
             Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
         }
         @Override
@@ -252,6 +252,9 @@ public class memolistActivity extends AppCompatActivity {
                 setBackground("#93db58");
             }
             else if(resultStr.indexOf("아니요")>-1){
+                setBackground("#93db58");
+            }
+            else if(resultStr.indexOf("검색")>-1){
                 setBackground("#93db58");
             }
             else autoStart();
