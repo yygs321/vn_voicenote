@@ -47,6 +47,13 @@ public class searchActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search);
 
+        i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+
+        mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        mRecognizer.setRecognitionListener(listener);
+
         memoArrayList = new ArrayList<>();
         dbHelper = new SQLiteHelper(searchActivity.this);
         memoArrayList = dbHelper.selectAll();
@@ -85,6 +92,14 @@ public class searchActivity extends AppCompatActivity
             }
         });
 
+        searchET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRecognizer.startListening(i);
+            }
+        });
+        autoStart();
+
     }
 
     @Override
@@ -103,16 +118,6 @@ public class searchActivity extends AppCompatActivity
 
         searchAdapter.filterList(filteredList);
 
-
-
-
-        i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
-        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
-
-        mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        mRecognizer.setRecognitionListener(listener);
-
         tts= new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -126,13 +131,23 @@ public class searchActivity extends AppCompatActivity
 
 
     }
-    private RecognitionListener listener = new RecognitionListener() {
-        @Override
-        public void onReadyForSpeech(Bundle bundle) {
-            String msg = "음성인식을 시작합니다.";
-            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-        }
 
+    private void autoStart(){
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                searchET.performClick();
+            }}, 3500);
+
+    }
+
+    private RecognitionListener listener = new RecognitionListener()
+    {
+        @Override
+        public void onReadyForSpeech(Bundle params) {
+            String msg="검색의 음성인식을 시작합니다.";
+            Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+        }
         @Override
         public void onBeginningOfSpeech() {
 
@@ -198,6 +213,13 @@ public class searchActivity extends AppCompatActivity
         @Override
         public void onResults(Bundle bundle) {
 
+            ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+            String resultStr = "";
+
+            for(int i = 0; i < matches.size() ; i++){
+                searchET.setText(matches.get(i));
+            }
         }
 
         @Override

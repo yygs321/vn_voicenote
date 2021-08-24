@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     {
         @Override
         public void onReadyForSpeech(Bundle params) {
-            Toast.makeText(getApplicationContext(),"음성인식을 시작합니다.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"메인 음성인식을 시작합니다.",Toast.LENGTH_SHORT).show();
     }
     @Override
     public void onBeginningOfSpeech() {}
