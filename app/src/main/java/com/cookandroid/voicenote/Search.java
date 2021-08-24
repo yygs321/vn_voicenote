@@ -1,4 +1,4 @@
-package com.cookandroid.voicenote;
+/*package com.cookandroid.voicenote;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,20 +26,19 @@ public class Search extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search);
 
-        memoArrayList = new ArrayList<>();
-        dbHelper = new SQLiteHelper(Search.this);
-        memoArrayList = dbHelper.selectAll();
-
 
         //어뎁터 연결
         recyclerView = findViewById(R.id.recyclerview);
         searchET = findViewById(R.id.searchMemo);//검색창의 글
 
         filteredList=new ArrayList<>();
+        dbHelper = new SQLiteHelper(Search.this);
+        memoArrayList = dbHelper.selectAll();
 
         searchAdapter = new searchadapter(memoArrayList, this);
-        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(searchAdapter);
 
         searchAdapter.notifyDataSetChanged();
@@ -83,4 +82,4 @@ public class Search extends AppCompatActivity {
         searchAdapter.filterList(filteredList);
     }
 
-}
+}*/

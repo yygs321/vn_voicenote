@@ -1,5 +1,6 @@
 package com.cookandroid.voicenote;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -9,9 +10,14 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -205,6 +211,82 @@ public class searchActivity extends AppCompatActivity
         }
     };
 
+    public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder>{
+        ArrayList<Memo> MemoArrayList;
+        Activity activity;
+
+        public searchadapter(ArrayList<Memo> memoItemArrayList, Activity activity) {
+            this.MemoArrayList = memoItemArrayList;
+            this.activity = activity;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item,viewGroup,false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+
+            Memo memo = MemoArrayList.get(position);
+            holder.maintext.setText(memo.getMaintext());
+            holder.subtext.setText(memo.getSubtext());
+            holder.maintext.setTag(memo.getSeq());
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return MemoArrayList.size();
+        }
+
+        public void  filterList(ArrayList<Memo> filteredList) {
+            MemoArrayList = filteredList;
+            notifyDataSetChanged();
+        }
+
+
+        public class ViewHolder extends RecyclerView.ViewHolder{
+            private TextView maintext;
+            private TextView subtext;
+            int click=0;
+
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                maintext = itemView.findViewById(R.id.item_maintext);
+                subtext = itemView.findViewById(R.id.item_subtext);
+
+                itemView.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if(click==0) {
+                            funcVoiceOut("메모를 수정합니다");
+                            int pos = getAdapterPosition();
+                            if (pos != RecyclerView.NO_POSITION) {
+                                Intent intent = new Intent(getApplicationContext(), Detail.class);
+
+                                intent.putExtra("maintext", maintext.getText());
+                                intent.putExtra("subtext", subtext.getText());
+                                intent.putExtra("no", (int) maintext.getTag());
+                                //intent.putExtra("pos",getAdapterPosition());
+
+                                startActivity(intent);
+                            }
+                        }
+                    }
+                });
+
+            }
+
+        }
+
+    }
+
     public void funcVoiceOut(String OutMsg) {
         if (OutMsg.length() < 1) return;
 
@@ -212,4 +294,5 @@ public class searchActivity extends AppCompatActivity
             tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
         }
     }
+
 }

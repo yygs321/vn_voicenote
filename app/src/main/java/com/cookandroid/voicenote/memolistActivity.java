@@ -69,6 +69,7 @@ public class memolistActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.memolist);
 
+
         buttonOn=0;
 
         //음성인식
@@ -365,7 +366,6 @@ public class memolistActivity extends AppCompatActivity {
 
             //remove기능위해 seq가져 오기
             itemViewHolder.maintext.setTag(memo.getSeq());
-
             itemViewHolder.maintext.setText(memo.getMaintext());
             itemViewHolder.subtext.setText(memo.getSubtext());
         }
