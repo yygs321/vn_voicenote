@@ -129,7 +129,6 @@ public class searchActivity extends AppCompatActivity
 
         mRecognizer.startListening(i);
 
-
     }
 
     private void autoStart(){
