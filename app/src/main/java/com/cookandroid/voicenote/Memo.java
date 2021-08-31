@@ -1,5 +1,7 @@
 package com.cookandroid.voicenote;
 
+import android.view.View;
+
 import java.io.Serializable;
 
 public class Memo implements Serializable{

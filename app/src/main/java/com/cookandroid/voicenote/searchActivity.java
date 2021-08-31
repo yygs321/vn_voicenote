@@ -61,6 +61,7 @@ public class searchActivity extends AppCompatActivity
 
         //어뎁터 연결
         recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setVisibility(View.INVISIBLE);
         searchET = findViewById(R.id.searchMemo);//검색창의 글
 
         filteredList=new ArrayList<>();
@@ -117,6 +118,7 @@ public class searchActivity extends AppCompatActivity
         }
 
         searchAdapter.filterList(filteredList);
+        recyclerView.setVisibility(View.VISIBLE);
 
         tts= new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
