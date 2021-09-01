@@ -10,6 +10,7 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,6 +100,24 @@ public class searchActivity extends AppCompatActivity
                 mRecognizer.startListening(i);
             }
         });
+
+        searchET.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(i == KeyEvent.KEYCODE_ENTER) {
+                    StringBuilder sp = new StringBuilder();
+                    for (int k = 0; k < filteredList.size(); k++) {
+                        StringBuilder sb = new StringBuilder(filteredList.get(k).getMaintext());
+                        sp.append(sb);
+                    }
+                    funcVoiceOut(sp.toString());
+                    searchET.setText(null);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         autoStart();
 
     }
@@ -119,6 +138,9 @@ public class searchActivity extends AppCompatActivity
 
         searchAdapter.filterList(filteredList);
         recyclerView.setVisibility(View.VISIBLE);
+
+
+
 
         tts= new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
