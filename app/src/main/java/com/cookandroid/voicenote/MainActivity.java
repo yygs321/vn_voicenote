@@ -264,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 String imsi = editText.getText().toString();
                 imsi = reverseString(imsi);
                 int idx = imsi.indexOf(" ");
-                String imsi1 = imsi.substring(0, idx);
-                imsi1 = imsi1.substring(2);
+                //제일뒷단어+띄어쓰기 지운 나머지 내용만 작성
+                String imsi1 = imsi.substring(idx+1, imsi.length());
                 imsi1 = reverseString(imsi1);
                 editText.setText(imsi1);
             }
@@ -283,6 +283,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 str = str.substring(6);
                 str = reverseString(str);
                 editText.setText(str+"\n");
+            }
+            else if(resultStr.indexOf("한줄지우기")>-1){
+                String imsi = editText.getText().toString();
+                imsi = reverseString(imsi);
+                int idx = imsi.indexOf("\n");
+                //한줄+엔터 지운 나머지 내용만 작성
+                String imsi1 = imsi.substring(idx+1, imsi.length());
+                imsi1 = reverseString(imsi1);
+                editText.setText(imsi1);
             }
             else if(resultStr.indexOf("메모읽기")>-1) {
                 String str=editText.getText().toString();
