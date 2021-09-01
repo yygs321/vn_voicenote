@@ -12,7 +12,6 @@
         android:id="@+id/searchMemo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="먹고싶은 음식 검색"
         android:layout_marginTop="10sp"
         android:layout_marginHorizontal="10sp"
         android:lines="1"
@@ -32,6 +31,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchMemo"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_food"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

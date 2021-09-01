@@ -69,6 +69,7 @@ public class memolistActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.memolist);
 
+
         buttonOn=0;
 
         //음성인식
@@ -162,7 +163,7 @@ public class memolistActivity extends AppCompatActivity {
     {
         @Override
         public void onReadyForSpeech(Bundle params) {
-            String msg="음성인식을 시작합니다.";
+            String msg="메모의 음성인식을 시작합니다.";
             Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
         }
         @Override
@@ -362,7 +363,6 @@ public class memolistActivity extends AppCompatActivity {
 
             //remove기능위해 seq가져 오기
             itemViewHolder.maintext.setTag(memo.getSeq());
-
             itemViewHolder.maintext.setText(memo.getMaintext());
             itemViewHolder.subtext.setText(memo.getSubtext());
         }

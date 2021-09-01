@@ -43,18 +43,21 @@
         android:id="@+id/helpbutton"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginLeft="280dp"
+        android:layout_toRightOf="@+id/logobutton"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="16dp"
-        android:onClick="mOnPopupClick"/>
+        android:onClick="mOnPopupClick"
+        android:background="@drawable/help"/>
 
     <Button
         android:id="@+id/searchbutton"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/logobutton"
         android:layout_marginTop="16dp"
-        android:layout_marginLeft="30dp"
-        android:onClick="mOnSearchClick" />
+        android:layout_marginRight="20dp"
+        android:onClick="mOnSearchClick"
+        android:background="@drawable/search"/>
 
     <TextView
         android:id="@+id/textView2"
@@ -73,6 +76,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="false" />
-
 
 </RelativeLayout>
