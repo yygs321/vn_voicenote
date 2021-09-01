@@ -111,6 +111,8 @@ public class memolistActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                funcVoiceOut("메모 작성 화면으로 이동합니다");
+
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
                 //작성하기 버튼 클릭시 음성인식되지 않도록
@@ -238,9 +240,6 @@ public class memolistActivity extends AppCompatActivity {
             if (resultStr.indexOf("메모작성")>-1){
                 setBackground("#93db58");
             }
-            else if(resultStr.indexOf("메모수정")>-1){
-                setBackground("#93db58");
-            }
             else if(resultStr.indexOf("취소")>-1){
                 setBackground("#93db58");
             }
@@ -251,6 +250,9 @@ public class memolistActivity extends AppCompatActivity {
                 setBackground("#93db58");
             }
             else if(resultStr.indexOf("아니요")>-1){
+                setBackground("#93db58");
+            }
+            else if(resultStr.indexOf("검색")>-1){
                 setBackground("#93db58");
             }
             else autoStart();
@@ -268,11 +270,6 @@ public class memolistActivity extends AppCompatActivity {
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
                 //메모작성 후 음성인식 반복 정지
-            }
-            else if(resultStr.indexOf("메모수정")>-1){
-                funcVoiceOut("메모를 수정합니다");
-                setBackground("#93db58");
-                Toast.makeText(getApplicationContext(),"메모 수정 명령어 인식",Toast.LENGTH_SHORT).show();
             }
             else if(resultStr.indexOf("전체삭제")>-1){
                 setBackground("#93db58");
@@ -397,6 +394,9 @@ public class memolistActivity extends AppCompatActivity {
                     {
                         //LongClick이랑 중복 안될때만 실행
                         if(click==0) {
+                            //메모 수정창으로 이동하면 메모리스트음성인식 종료
+                            ButtonOff();
+
                             funcVoiceOut("메모를 수정합니다");
                             int pos = getAdapterPosition();
                             if (pos != RecyclerView.NO_POSITION) {

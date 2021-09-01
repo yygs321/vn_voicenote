@@ -49,6 +49,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
     Button button;
     Button logobutton;
     int click=0;
+
     long delay;
 
     public Detail() {
@@ -169,7 +170,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                         setBackground("#ff1f4f");
                         mRecognizer.startListening(i);
                     }
-                },2500);
+                },2000);
             }
         });
 
@@ -184,7 +185,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 logobutton.performClick();
                 setBackground("#ff1f4f");
             }
-        },2500);
+        },2000);
     }
 
     private void speechStart(){
@@ -249,6 +250,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
                 et1.append(matches.get(i));
                 resultStr += matches.get(i);
+
             }
             if (resultStr.length() < 1) return;
             resultStr = resultStr.replace(" ", "");
@@ -314,8 +316,8 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 String imsi = et1.getText().toString();
                 imsi = reverseString(imsi);
                 int idx = imsi.indexOf(" ");
-                String imsi1 = imsi.substring(0, idx);
-                imsi1 = imsi1.substring(2);
+                //제일뒷단어+띄어쓰기 지운 나머지 내용만 작성
+                String imsi1 = imsi.substring(idx+1, imsi.length());
                 imsi1 = reverseString(imsi1);
                 et1.setText(imsi1);
             }
@@ -332,6 +334,15 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 str = str.substring(6);
                 str = reverseString(str);
                 et1.setText(str+"\n");
+            }
+            else if(resultStr.indexOf("한줄지우기")>-1){
+                String imsi = et1.getText().toString();
+                imsi = reverseString(imsi);
+                int idx = imsi.indexOf("\n");
+                //한줄+엔터 지운 나머지 내용만 작성
+                String imsi1 = imsi.substring(idx+1, imsi.length());
+                imsi1 = reverseString(imsi1);
+                et1.setText(imsi1);
             }
             else if(resultStr.indexOf("메모읽기")>-1) {
                 String str=et1.getText().toString();
@@ -362,6 +373,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 imsi = imsi.substring(2);
                 imsi = reverseString(imsi);
                 et1.setText(imsi);
+
                 dbHelper.updateMemo(a, imsi);
                 Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
                 speakOut(); //수정된 메모 읽어주기
