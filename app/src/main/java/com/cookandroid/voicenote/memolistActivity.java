@@ -256,6 +256,9 @@ public class memolistActivity extends AppCompatActivity {
             else if(resultStr.indexOf("검색")>-1){
                 setBackground("#93db58");
             }
+            else if(resultStr.indexOf("도움말")>-1){
+                setBackground("#93db58");
+            }
             else autoStart();
 
         }
@@ -291,6 +294,11 @@ public class memolistActivity extends AppCompatActivity {
                 funcVoiceOut("검색 화면으로 이동합니다");
                 Intent intent = new Intent(memolistActivity.this, searchActivity.class);
                 startActivityForResult(intent, 0);
+            }
+            else if(resultStr.indexOf("도움말")>-1){
+                setBackground("#93db58");
+                Intent intent = new Intent(memolistActivity.this, helpActivity.class);
+                startActivityForResult(intent, 1);
             }
             else if(resultStr.indexOf("네")>-1){
                 setBackground("#93db58");
