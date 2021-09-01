@@ -274,6 +274,7 @@ public class memolistActivity extends AppCompatActivity {
                 Intent intent = new Intent(memolistActivity.this, MainActivity.class);
                 startActivityForResult(intent, 0);
                 //메모작성 후 음성인식 반복 정지
+                ButtonOff();
             }
             else if(resultStr.indexOf("전체삭제")>-1){
                 setBackground("#93db58");
@@ -294,11 +295,13 @@ public class memolistActivity extends AppCompatActivity {
                 funcVoiceOut("검색 화면으로 이동합니다");
                 Intent intent = new Intent(memolistActivity.this, searchActivity.class);
                 startActivityForResult(intent, 0);
+                ButtonOff();
             }
             else if(resultStr.indexOf("도움말")>-1){
                 setBackground("#93db58");
                 Intent intent = new Intent(memolistActivity.this, helpActivity.class);
                 startActivityForResult(intent, 1);
+                ButtonOff();
             }
             else if(resultStr.indexOf("네")>-1){
                 setBackground("#93db58");

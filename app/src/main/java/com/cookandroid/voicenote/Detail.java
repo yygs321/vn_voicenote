@@ -33,6 +33,7 @@ import java.util.ArrayList;
 
 public class Detail extends AppCompatActivity implements TextToSpeech.OnInitListener{
     private static final int URI_INTENT_SCHEME = 0;
+    private static int buttonOn;
     List<Memo> memoList;
 //test
     SQLiteHelper dbHelper;
@@ -76,6 +77,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
         memoList = dbHelper.selectAll();
 
         button = (Button)findViewById(R.id.mainbutton);
+        buttonOn=0;
 
         et1 = (EditText)findViewById(R.id.editText);
         et2 = (TextView)findViewById(R.id.textView2);
@@ -178,14 +180,16 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
     //자동 음성인식
     private void autoStart(){
-        //2초 후 자동 음성인식 실행
-        new android.os.Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                logobutton.performClick();
-                setBackground("#ff1f4f");
-            }
-        },2000);
+        if(buttonOn!=1) {
+            //3.5초 후 자동 음성인식 실행
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setBackground("#ff1f4f");
+                    logobutton.performClick();
+                }
+            }, 2000);
+        }
     }
 
     private void speechStart(){
@@ -408,10 +412,43 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
 
                 funcVoiceOut("음성인식이 취소되었습니다");
             }
+            else if(resultStr.indexOf("검색")>-1){
+                setBackground("#93db58");
+                int a = Integer.parseInt(et3.getText().toString());
+                String imsi = et1.getText().toString();
+                imsi = reverseString(imsi);
+                imsi = imsi.substring(2);
+                imsi = reverseString(imsi);
+                et1.setText(imsi);
+
+                funcVoiceOut("검색 화면으로 이동합니다");
+                Intent intent = new Intent(Detail.this, searchActivity.class);
+                startActivityForResult(intent, 0);
+
+                ButtonOff();
+            }
+            else if(resultStr.indexOf("도움말")>-1){
+                setBackground("#93db58");
+                int a = Integer.parseInt(et3.getText().toString());
+                String imsi = et1.getText().toString();
+                imsi = reverseString(imsi);
+                imsi = imsi.substring(3);
+                imsi = reverseString(imsi);
+                et1.setText(imsi);
+
+                Intent intent = new Intent(Detail.this, helpActivity.class);
+                startActivityForResult(intent, 1);
+
+                ButtonOff();
+            }
         }
     };
     public static String reverseString(String s){
         return (new StringBuffer(s)).reverse().toString();
+    }
+    public static void ButtonOff(){
+        //메모리스트 화면으로 오면 0으로 초기화하여 자동음성인식 가능하게함
+        buttonOn=1;
     }
 
     @Override
