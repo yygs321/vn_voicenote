@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
-    private static int buttonOn;
     EditText editText;
     //TextView et3;
     Button logobutton;
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         //화면 세로고정
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        buttonOn=0;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -349,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                 funcVoiceOut("음성인식을 취소합니다");
             }
+
             else if(resultStr.indexOf("검색")>-1){
                 setBackground("#93db58");
                 String imsi = editText.getText().toString();
@@ -360,8 +359,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 funcVoiceOut("검색 화면으로 이동합니다");
                 Intent intent = new Intent(MainActivity.this, searchActivity.class);
                 startActivityForResult(intent, 0);
-
-                ButtonOff();
             }
             else if(resultStr.indexOf("도움말")>-1){
                 setBackground("#93db58");
@@ -373,7 +370,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                 Intent intent = new Intent(MainActivity.this, helpActivity.class);
                 startActivityForResult(intent, 1);
-                ButtonOff();
             }
 
         }
@@ -414,22 +410,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     //자동 음성인식
     private void autoStart(){
-        if(buttonOn!=1) {
-            //3.5초 후 자동 음성인식 실행
-            new android.os.Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setBackground("#ff1f4f");
-                    logobutton.performClick();
-                }
-            }, 3000);
-        }
+        //2초 후 자동 음성인식 실행
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                logobutton.performClick();
+                setBackground("#ff1f4f");
+            }
+        },3000);
     }
 
-    public static void ButtonOff(){
-        //메모리스트 화면으로 오면 0으로 초기화하여 자동음성인식 가능하게함
-        buttonOn=1;
-    }
 
     //메모 저장
     private void saveMemo(){
