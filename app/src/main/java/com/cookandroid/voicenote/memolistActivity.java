@@ -121,16 +121,6 @@ public class memolistActivity extends AppCompatActivity {
             }
         });
 
-        /*
-        helpbutton = findViewById(R.id.helpbutton);
-        helpbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(memolistActivity.this, helpActivity.class);
-                startActivityForResult(intent, 0);
-            }
-        });
-        */
         //로고버튼으로 음성인식 받기
         button3= findViewById(R.id.button3);
         button3.setOnClickListener(new View.OnClickListener() {
@@ -140,10 +130,7 @@ public class memolistActivity extends AppCompatActivity {
                 setBackground("#ff1f4f");
             }
         });
-
-
         autoStart();
-
     }
 
     private void autoStart(){
