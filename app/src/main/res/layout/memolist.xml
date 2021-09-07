@@ -31,6 +31,7 @@
         android:layout_height="206dp"
         android:layout_alignParentBottom="true"
         android:text="메모 작성하기"
+        android:textSize="30dp"
         android:background="#93db58"/>
 
     <Button
