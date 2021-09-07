@@ -26,7 +26,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class searchActivity extends AppCompatActivity {
+public class searchActivity extends AppCompatActivity
+{
+    private static int buttonOn;
+
     Intent i;
     SpeechRecognizer mRecognizer;
     TextToSpeech tts;
@@ -79,14 +82,17 @@ public class searchActivity extends AppCompatActivity {
 
         filteredList = new ArrayList<>();
 
-
-
         searchAdapter = new searchadapter(memoArrayList, this);
         linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(searchAdapter);
 
         searchAdapter.notifyDataSetChanged();
+
+        buttonOn=0;
 
         searchET.addTextChangedListener(new TextWatcher() {
             @Override
@@ -174,18 +180,22 @@ public class searchActivity extends AppCompatActivity {
 
         //funcVoiceOut("아웃");
 
+        autoStart();
+
         //searchET.setText(sp.toString());
         //searchET.setText("xp");
     }
 
-    private void autoStart() {
-        new android.os.Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                searchET.performClick();
-            }
-        }, 3500);
 
+    private void autoStart(){
+        if(buttonOn!=1) {
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    searchET.performClick();
+                }
+            }, 3500);
+        }
     }
 
     private RecognitionListener listener = new RecognitionListener() {
@@ -264,8 +274,30 @@ public class searchActivity extends AppCompatActivity {
 
             String resultStr = "";
 
-            for (int i = 0; i < matches.size(); i++) {
-                searchET.setText(matches.get(i));
+            for(int i = 0; i < matches.size() ; i++){
+                resultStr += matches.get(i);
+            }
+
+            //취소 시 검색음성인식 정지
+            if (resultStr.indexOf("취소")>-1){
+                buttonOn=1;
+
+                funcVoiceOut("메모검색이 취소되었습니다");
+                Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
+                startActivityForResult(intent, 101);
+            }
+            else if(resultStr.indexOf("완료")>-1){
+                //음성인식 정지
+                buttonOn=1;
+                funcVoiceOut("메모검색이 완료되었습니다");
+            }
+            else {
+                buttonOn=0;
+                for(int i = 0; i < matches.size() ; i++){
+                    searchET.setText(matches.get(i));
+
+                }
+
             }
 
         }

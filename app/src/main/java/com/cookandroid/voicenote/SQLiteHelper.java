@@ -14,6 +14,7 @@ import org.w3c.dom.Text;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 
 public class SQLiteHelper {
     private static final String dbName = "myMemo";
@@ -75,6 +76,7 @@ public class SQLiteHelper {
 
         ArrayList<Memo> list = new ArrayList<>();
 
+
         Cursor results = db.rawQuery(sql, null);
         results.moveToFirst();
 
@@ -83,6 +85,8 @@ public class SQLiteHelper {
             list.add(memo);
             results.moveToNext();
         }
+
+        //        Collections.reverse(list);
         results.close();
         return list;
     }

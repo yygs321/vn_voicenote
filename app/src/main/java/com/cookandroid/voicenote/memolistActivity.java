@@ -102,10 +102,16 @@ public class memolistActivity extends AppCompatActivity {
         //recyclerView와 recyclerAdapter 연결
         recyclerView= findViewById(R.id.recyclerview);
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(this);
+
+        //최신 글이 위로 오도록 정렬
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
+
 
         recyclerAdapter= new RecyclerAdapter(memoList);
         recyclerView.setAdapter(recyclerAdapter);
+
 
         //작성하기 버튼
         button= findViewById(R.id.button);
@@ -121,16 +127,6 @@ public class memolistActivity extends AppCompatActivity {
             }
         });
 
-        /*
-        helpbutton = findViewById(R.id.helpbutton);
-        helpbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(memolistActivity.this, helpActivity.class);
-                startActivityForResult(intent, 0);
-            }
-        });
-        */
         //로고버튼으로 음성인식 받기
         button3= findViewById(R.id.button3);
         button3.setOnClickListener(new View.OnClickListener() {
@@ -140,10 +136,7 @@ public class memolistActivity extends AppCompatActivity {
                 setBackground("#ff1f4f");
             }
         });
-
-
         autoStart();
-
     }
 
     private void autoStart(){
