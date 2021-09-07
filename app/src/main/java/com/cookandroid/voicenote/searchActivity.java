@@ -71,6 +71,9 @@ public class searchActivity extends AppCompatActivity
 
         searchAdapter = new searchadapter(memoArrayList, this);
         linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(searchAdapter);
 

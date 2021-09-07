@@ -102,10 +102,16 @@ public class memolistActivity extends AppCompatActivity {
         //recyclerView와 recyclerAdapter 연결
         recyclerView= findViewById(R.id.recyclerview);
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(this);
+
+        //최신 글이 위로 오도록 정렬
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
+
 
         recyclerAdapter= new RecyclerAdapter(memoList);
         recyclerView.setAdapter(recyclerAdapter);
+
 
         //작성하기 버튼
         button= findViewById(R.id.button);
