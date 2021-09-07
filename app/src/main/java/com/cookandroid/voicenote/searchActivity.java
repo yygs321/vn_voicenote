@@ -26,8 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class searchActivity extends AppCompatActivity
-{
+public class searchActivity extends AppCompatActivity {
     Intent i;
     SpeechRecognizer mRecognizer;
     TextToSpeech tts;
@@ -38,9 +37,11 @@ public class searchActivity extends AppCompatActivity
     LinearLayoutManager linearLayoutManager;
     EditText searchET;
     SQLiteHelper dbHelper;
+    StringBuilder sp;
 
     public searchActivity() {
     }
+
     protected void onCreate(Bundle savedInstanceState) {
         //화면 세로고정
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -50,14 +51,25 @@ public class searchActivity extends AppCompatActivity
 
         i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
-        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
 
         mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mRecognizer.setRecognitionListener(listener);
 
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
+
         memoArrayList = new ArrayList<>();
         dbHelper = new SQLiteHelper(searchActivity.this);
         memoArrayList = dbHelper.selectAll();
+
+        sp = new StringBuilder();
 
 
         //어뎁터 연결
@@ -65,7 +77,9 @@ public class searchActivity extends AppCompatActivity
         recyclerView.setVisibility(View.INVISIBLE);
         searchET = findViewById(R.id.searchMemo);//검색창의 글
 
-        filteredList=new ArrayList<>();
+        filteredList = new ArrayList<>();
+
+
 
         searchAdapter = new searchadapter(memoArrayList, this);
         linearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -91,6 +105,23 @@ public class searchActivity extends AppCompatActivity
                 String searchText = searchET.getText().toString();
                 searchFilter(searchText);
 
+                //StringBuilder sp = new StringBuilder();
+                int l = filteredList.size();
+                for (int k = 0; k < l; k++) {
+                    StringBuilder sb = new StringBuilder(filteredList.get(k).getMaintext());
+                    sp.append(sb);
+                    if(k+1<l){
+                        sp.append("  다음 글  ");
+                    }
+                    else sp.append("  목록 끝  ");
+                }
+                //searchET.setText(sp.toString());
+
+
+
+                funcVoiceOut(sp.toString());
+
+                //autoStart();
             }
         });
 
@@ -104,7 +135,7 @@ public class searchActivity extends AppCompatActivity
         searchET.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if(i == KeyEvent.KEYCODE_ENTER) {
+                if (i == KeyEvent.KEYCODE_ENTER) {
                     StringBuilder sp = new StringBuilder();
                     for (int k = 0; k < filteredList.size(); k++) {
                         StringBuilder sb = new StringBuilder(filteredList.get(k).getMaintext());
@@ -117,7 +148,6 @@ public class searchActivity extends AppCompatActivity
                 return false;
             }
         });
-
         autoStart();
 
     }
@@ -133,44 +163,38 @@ public class searchActivity extends AppCompatActivity
         for (int i = 0; i < memoArrayList.size(); i++) {
             if (memoArrayList.get(i).getMaintext().toLowerCase().contains(searchText.toLowerCase())) {
                 filteredList.add(memoArrayList.get(i));
+                //sp.append(memoArrayList.get(i).getMaintext());
             }
         }
+
+        //funcVoiceOut(sp.toString());
 
         searchAdapter.filterList(filteredList);
         recyclerView.setVisibility(View.VISIBLE);
 
+        //funcVoiceOut("아웃");
 
-
-
-        tts= new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status!= TextToSpeech.ERROR){
-                    tts.setLanguage(Locale.KOREAN);
-                }
-            }
-        });
-
-        mRecognizer.startListening(i);
-
+        //searchET.setText(sp.toString());
+        //searchET.setText("xp");
     }
 
-    private void autoStart(){
+    private void autoStart() {
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 searchET.performClick();
-            }}, 3500);
+            }
+        }, 3500);
 
     }
 
-    private RecognitionListener listener = new RecognitionListener()
-    {
+    private RecognitionListener listener = new RecognitionListener() {
         @Override
         public void onReadyForSpeech(Bundle params) {
-            String msg="검색의 음성인식을 시작합니다.";
-            Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+            String msg = "검색의 음성인식을 시작합니다.";
+            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
         }
+
         @Override
         public void onBeginningOfSpeech() {
 
@@ -240,9 +264,10 @@ public class searchActivity extends AppCompatActivity
 
             String resultStr = "";
 
-            for(int i = 0; i < matches.size() ; i++){
+            for (int i = 0; i < matches.size(); i++) {
                 searchET.setText(matches.get(i));
             }
+
         }
 
         @Override
@@ -256,7 +281,7 @@ public class searchActivity extends AppCompatActivity
         }
     };
 
-    public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder>{
+    public class searchadapter extends RecyclerView.Adapter<searchadapter.ViewHolder> {
         ArrayList<Memo> MemoArrayList;
         Activity activity;
 
@@ -268,7 +293,7 @@ public class searchActivity extends AppCompatActivity
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item,viewGroup,false);
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup, false);
             return new ViewHolder(view);
         }
 
@@ -287,16 +312,16 @@ public class searchActivity extends AppCompatActivity
             return MemoArrayList.size();
         }
 
-        public void  filterList(ArrayList<Memo> filteredList) {
+        public void filterList(ArrayList<Memo> filteredList) {
             MemoArrayList = filteredList;
             notifyDataSetChanged();
         }
 
 
-        public class ViewHolder extends RecyclerView.ViewHolder{
+        public class ViewHolder extends RecyclerView.ViewHolder {
             private TextView maintext;
             private TextView subtext;
-            int click=0;
+            int click = 0;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -304,12 +329,10 @@ public class searchActivity extends AppCompatActivity
                 maintext = itemView.findViewById(R.id.item_maintext);
                 subtext = itemView.findViewById(R.id.item_subtext);
 
-                itemView.setOnClickListener(new View.OnClickListener()
-                {
+                itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v)
-                    {
-                        if(click==0) {
+                    public void onClick(View v) {
+                        if (click == 0) {
                             funcVoiceOut("메모를 수정합니다");
                             int pos = getAdapterPosition();
                             if (pos != RecyclerView.NO_POSITION) {
@@ -335,7 +358,7 @@ public class searchActivity extends AppCompatActivity
     public void funcVoiceOut(String OutMsg) {
         if (OutMsg.length() < 1) return;
 
-        if(!tts.isSpeaking()){
+        if (!tts.isSpeaking()) {
             tts.speak(OutMsg, TextToSpeech.QUEUE_FLUSH, null);
         }
     }
