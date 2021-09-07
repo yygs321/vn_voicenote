@@ -3,6 +3,9 @@ package com.cookandroid.voicenote;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -23,7 +26,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 public class searchActivity extends AppCompatActivity
@@ -113,21 +118,26 @@ public class searchActivity extends AppCompatActivity
 
                 //StringBuilder sp = new StringBuilder();
                 int l = filteredList.size();
-                for (int k = 0; k < l; k++) {
+                int k=0;
+                for (k= 0; k < l;k++) {
                     StringBuilder sb = new StringBuilder(filteredList.get(k).getMaintext());
                     sp.append(sb);
-                    if(k+1<l){
-                        sp.append("  다음 글  ");
+                    if(k+1<l) {
+                        sp.append("\nnext\n");
                     }
-                    else sp.append("  목록 끝  ");
+                    else {
+                        sp.append("\n목록 끝\n");
+                    }
                 }
-                //searchET.setText(sp.toString());
-
-
-
                 funcVoiceOut(sp.toString());
 
-                //autoStart();
+                //searchET.setText(sp.toString());
+
+                //검색 목록 다 읽어온 후 sp 초기화
+                if(k>=l){
+                    int len= sp.length();
+                    sp.delete(0,len);
+                }
             }
         });
 
@@ -158,10 +168,6 @@ public class searchActivity extends AppCompatActivity
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     public void searchFilter(String searchText) {
         filteredList.clear();
@@ -292,7 +298,7 @@ public class searchActivity extends AppCompatActivity
                 funcVoiceOut("메모검색이 완료되었습니다");
             }
             else {
-                buttonOn=0;
+                buttonOn=1;
                 for(int i = 0; i < matches.size() ; i++){
                     searchET.setText(matches.get(i));
 
