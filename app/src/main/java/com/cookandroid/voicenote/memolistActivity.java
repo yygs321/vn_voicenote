@@ -292,7 +292,7 @@ public class memolistActivity extends AppCompatActivity {
             }
             else if(resultStr.indexOf("도움말")>-1){
                 setBackground("#93db58");
-                Intent intent = new Intent(memolistActivity.this, helpActivity.class);
+                Intent intent = new Intent(memolistActivity.this, List_helpActivity.class);
                 startActivityForResult(intent, 1);
                 ButtonOff();
             }
@@ -477,8 +477,10 @@ public class memolistActivity extends AppCompatActivity {
     }
 
     public void mOnPopupClick(View v){
-        Intent intent = new Intent(this, helpActivity.class);
+        Intent intent = new Intent(this, List_helpActivity.class);
         startActivityForResult(intent, 1);
+        tts.speak("화면 상단에는 검색, 음성명령 호출, 도움말 버튼이 있습니다. 리스트 화면의 음성명령 키워드는 취소, 메모작성, 검색, 전체삭제 가 있습니다",
+                TextToSpeech.QUEUE_FLUSH,null);
     }
 
     public void mOnSearchClick(View v){
