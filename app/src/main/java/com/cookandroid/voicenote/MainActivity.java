@@ -4,23 +4,16 @@ package com.cookandroid.voicenote;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import android.Manifest;
-import android.app.UiAutomation;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
-import android.text.Editable;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.graphics.Color;
 import java.text.SimpleDateFormat;
@@ -370,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 imsi = reverseString(imsi);
                 editText.setText(imsi);
 
-                Intent intent = new Intent(MainActivity.this, helpActivity.class);
+                Intent intent = new Intent(MainActivity.this, Detail_helpActivity.class);
                 startActivityForResult(intent, 1);
             }
 
@@ -472,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     public void mOnPopupClick(View v){
-        Intent intent = new Intent(this, helpActivity.class);
+        Intent intent = new Intent(this, Detail_helpActivity.class);
         startActivityForResult(intent, 1);
     }
 

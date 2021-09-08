@@ -25,8 +25,8 @@
         <activity android:name=".Detail"/>
         <activity android:name=".searchActivity"></activity>
         <activity android:name=".Search"></activity>
-        <activity android:name=".helpActivity" android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
-
+        <activity android:name=".Detail_helpActivity" android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
+        <activity android:name=".List_helpActivity" android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
