@@ -127,25 +127,29 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                     //저장시 메모리스트에서 음성인식되지 않도록
                     memolistActivity.ButtonOff();
 
+
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-                    String substr = sdf.format(date);
+                    //String substr = sdf.format(date);
 
                     //입력받은 메모 리스트로 보내기
-                    Intent intent1 = new Intent(getApplicationContext(), memolistActivity.class);
-                    intent1.putExtra("main", str);
-                    intent1.putExtra("sub", substr);
-                    setResult(200, intent1);
-                    speakOut();
-                    new Handler().postDelayed(new Runnable() {
+                    int a = Integer.parseInt(et3.getText().toString());
+                    String imsi = et1.getText().toString();
+
+                    dbHelper.updateMemo(a, imsi);
+                    Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
+                    speakOut(); //수정된 메모 읽어주기
+
+
+                    new android.os.Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-
-                            finish();
+                            startActivityForResult(intent, 101);
+                            funcVoiceOut("수정이 완료되었습니다");
                         }
-                    }, 5000);
-                    funcVoiceOut("수정이 완료되었습니다");
+                    },5000);
+
                 }
                 else {
                     mRecognizer.startListening(i);
