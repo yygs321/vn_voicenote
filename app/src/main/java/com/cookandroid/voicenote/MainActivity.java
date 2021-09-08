@@ -210,7 +210,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         else if(resultStr.indexOf("삭제")>-1){
         }
         else if(resultStr.indexOf("메모읽기")>-1){}
-        else if(resultStr.indexOf("글로쓰기")>-1){}
+        else if(resultStr.indexOf("글로쓰기")>-1){
+            setBackground("#93db58");
+        }
         else if(resultStr.indexOf("검색")>-1){
             setBackground("#93db58");
         }
@@ -363,6 +365,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                 Intent intent = new Intent(MainActivity.this, Detail_helpActivity.class);
                 startActivityForResult(intent, 1);
+                tts.speak("화면 상단에는 검색, 음성명령 호출, 도움말 버튼이 있습니다. 메모작성 화면의 음성명령 키워드는 글로 쓰기, 다시 쓰기, 절반 지우기, " +
+                                "한 자리, 두 자리, 세 자리, 단어 삭, 띄어쓰기, 한 줄 띄우기, 메모 읽기, 삭제, 저장, 취소 가 있습니다",
+                        TextToSpeech.QUEUE_FLUSH,null);
             }
 
         }
@@ -465,6 +470,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void mOnPopupClick(View v){
         Intent intent = new Intent(this, Detail_helpActivity.class);
         startActivityForResult(intent, 1);
+        tts.speak("화면 상단에는 검색, 음성명령 호출, 도움말 버튼이 있습니다. 메모작성 화면의 음성명령 키워드는 글로 쓰기, 다시 쓰기, 절반 지우기, " +
+                        "한 자리, 두 자리, 세 자리, 단어 삭, 띄어쓰기, 한 줄 띄우기, 메모 읽기, 삭제, 저장, 취소 가 있습니다",
+                TextToSpeech.QUEUE_FLUSH,null);
     }
 
     public void mOnSearchClick(View v){

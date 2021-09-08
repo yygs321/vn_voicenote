@@ -1,7 +1,10 @@
 package com.cookandroid.voicenote;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -18,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +51,7 @@ public class searchActivity extends AppCompatActivity
     SQLiteHelper dbHelper;
     StringBuilder sp;
 
+
     public searchActivity() {
     }
 
@@ -63,6 +68,7 @@ public class searchActivity extends AppCompatActivity
 
         mRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mRecognizer.setRecognitionListener(listener);
+
 
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -113,11 +119,16 @@ public class searchActivity extends AppCompatActivity
             @Override
             public void afterTextChanged(Editable editable) {
 
+                //검색 목록 다 읽어온 후 sp 초기화
+                int len= sp.length();
+                sp.delete(0,len);
+
                 String searchText = searchET.getText().toString();
                 searchFilter(searchText);
 
                 //StringBuilder sp = new StringBuilder();
                 int l = filteredList.size();
+
                 int k=0;
                 for (k= 0; k < l;k++) {
                     StringBuilder sb = new StringBuilder(filteredList.get(k).getMaintext());
@@ -126,24 +137,26 @@ public class searchActivity extends AppCompatActivity
                         sp.append("\nnext\n");
                     }
                     else {
-                        sp.append("\n목록 끝\n");
+                        sp.append("\n목록 끝\n\n가장 최근 메모를 불러오시겠습니까?");
                     }
                 }
                 funcVoiceOut(sp.toString());
 
-                //searchET.setText(sp.toString());
-
-                //검색 목록 다 읽어온 후 sp 초기화
-                if(k>=l){
-                    int len= sp.length();
-                    sp.delete(0,len);
+                /*
+                String act=i.getAction();
+                if(act.equals(TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED)){
+                    buttonOn=0;
+                    autoStart();
                 }
+                */
+
             }
         });
 
         searchET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                buttonOn=0;
                 mRecognizer.startListening(i);
             }
         });
@@ -297,12 +310,33 @@ public class searchActivity extends AppCompatActivity
                 buttonOn=1;
                 funcVoiceOut("메모검색이 완료되었습니다");
             }
+            else if(resultStr.indexOf("네")>-1){
+                //음성인식 정지
+                funcVoiceOut("메모를 수정합니다");
+                buttonOn=1;
+
+                //가장 최신 메모 수정 불러오기
+                int l=filteredList.size();
+                recyclerView.findViewHolderForAdapterPosition(l-1).itemView.performClick();
+
+            }
+            else if(resultStr.indexOf("아니요")>-1){
+                //음성인식 정지
+                buttonOn=1;
+                funcVoiceOut("검색이 완료되었습니다");
+            }
             else {
                 buttonOn=1;
                 for(int i = 0; i < matches.size() ; i++){
                     searchET.setText(matches.get(i));
-
                 }
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        buttonOn=0;
+                        autoStart();
+                    }
+                }, 5500);
 
             }
 
