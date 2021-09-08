@@ -11,7 +11,6 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 //TTS
 import android.speech.tts.TextToSpeech;
-import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -430,7 +429,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 imsi = reverseString(imsi);
                 et1.setText(imsi);
 
-                Intent intent = new Intent(Detail.this, helpActivity.class);
+                Intent intent = new Intent(Detail.this, Detail_helpActivity.class);
                 startActivityForResult(intent, 1);
             }
         }
@@ -484,8 +483,11 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
     }
 
     public void mOnPopupClick(View v){
-        Intent intent = new Intent(this, helpActivity.class);
+        Intent intent = new Intent(this, Detail_helpActivity.class);
         startActivityForResult(intent, 1);
+        tts.speak("화면 상단에는 검색, 음성명령 호출, 도움말 버튼이 있습니다. 메모작성 화면의 음성명령 키워드는 글로 쓰기, 다시 쓰기, 절반 지우기, " +
+                        "한 자리, 두 자리, 세 자리, 단어 삭, 띄어쓰기, 한 줄 띄우기, 메모 읽기, 삭제, 저장, 취소 가 있습니다",
+                TextToSpeech.QUEUE_FLUSH,null);
     }
 
     public void mOnSearchClick(View v){
