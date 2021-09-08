@@ -217,7 +217,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         else if(resultStr.indexOf("삭제")>-1){
         }
         else if(resultStr.indexOf("메모읽기")>-1){}
-        else if(resultStr.indexOf("글로쓰기")>-1){}
+        else if(resultStr.indexOf("글로쓰기")>-1){
+            setBackground("#93db58");
+        }
         else if(resultStr.indexOf("검색")>-1){
             setBackground("#93db58");
         }
