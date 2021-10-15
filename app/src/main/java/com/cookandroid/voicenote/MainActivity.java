@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     //TextView et3;
     Button logobutton;
     Button mainbutton;
+    int say = 0;
 
     Intent intent;
 
@@ -202,13 +203,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             actionActivity(resultStr);
 
             //"저장", "취소", "삭제"가 아닐 때만 반복
-        if (resultStr.indexOf("저장")>-1){
+        if (resultStr.indexOf("네")>-1){
             memolistActivity.ButtonOff();
         }
-        else if(resultStr.indexOf("취소")>-1){
+         else if(resultStr.indexOf("취소")>-1){
         }
-        else if(resultStr.indexOf("삭제")>-1){
-        }
+//        else if(resultStr.indexOf("삭제")>-1){
+//        }
         else if(resultStr.indexOf("메모읽기")>-1){}
         else if(resultStr.indexOf("글로쓰기")>-1){
             setBackground("#93db58");
@@ -310,22 +311,56 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 }, 4000);
             }
             else if(resultStr.indexOf("삭제")>-1) {
-                Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
-                startActivityForResult(intent, 101);
-                funcVoiceOut("메모가 삭제되었습니다");
-            }
-            else if(resultStr.indexOf("저장")>-1) {
-                //"저장"글자까지 저장되지 않도록
+                funcVoiceOut("정말 삭제하시겠습니까?");
+                say = 1;
                 String str=editText.getText().toString();
                 str = reverseString(str);
                 str = str.substring(2);
                 str = reverseString(str);
                 editText.setText(str);
-
-                if(str.length()>0) {
-                    saveMemo();
+            }
+            else if(resultStr.indexOf("네")>-1) {
+                if(say == 1){
+                    Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
+                    startActivityForResult(intent, 101);
+                    funcVoiceOut("메모가 삭제되었습니다");
                 }
-                else autoStart();
+                else if(say == 2){
+                    String str=editText.getText().toString();
+                    str = reverseString(str);
+                    str = str.substring(1);
+                    str = reverseString(str);
+                    editText.setText(str);
+
+                    saveMemo();
+
+                    funcVoiceOut("메모가 저장되었습니다");
+                }
+            }
+            else if(resultStr.indexOf("아니요")>-1) {
+                String str=editText.getText().toString();
+                str = reverseString(str);
+                str = str.substring(3);
+                str = reverseString(str);
+                editText.setText(str);
+
+                if(say==1){
+                    editText.append(" 삭제");
+                }
+                else if( say== 2){
+                    editText.append(" 저장");
+                }
+
+            }
+            else if(resultStr.indexOf("저장")>-1) {
+                //"저장"글자까지 저장되지 않도록
+                say = 2;
+                String str=editText.getText().toString();
+                str = reverseString(str);
+                str = str.substring(2);
+                str = reverseString(str);
+                editText.setText(str);
+                funcVoiceOut("정말 저장하시겠습니까?");
             }
             else if(resultStr.indexOf("취소")>-1) {
                 funcVoiceOut("메모 작성이 취소되었습니다");
