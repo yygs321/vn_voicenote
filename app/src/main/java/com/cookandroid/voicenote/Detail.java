@@ -41,7 +41,7 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
     final int PERMISSON=1;
     Intent sttIntent, i;
     SpeechRecognizer mRecognizer;
-
+    int say = 0;
     EditText et1;
     TextView et2, et3;
     TextView txtInMsg;
@@ -261,13 +261,13 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
             actionActivity(resultStr);
 
             //저장, 이동, 삭제가 아닐 때만 반복
-            if (resultStr.indexOf("저장")>-1){
+            if (resultStr.indexOf("네")>-1){
                 memolistActivity.ButtonOff();
             }
             else if(resultStr.indexOf("취소")>-1){
             }
-            else if(resultStr.indexOf("삭제")>-1){
-            }
+//            else if(resultStr.indexOf("삭제")>-1){
+//            }
             else if(resultStr.indexOf("메모읽기")>-1){}
             else if(resultStr.indexOf("글로쓰기")>-1){
                 setBackground("#93db58");
@@ -371,31 +371,68 @@ public class Detail extends AppCompatActivity implements TextToSpeech.OnInitList
                 }, 4000);
             }
             else if(resultStr.indexOf("삭제")>-1) {
-                int a = Integer.parseInt(et3.getText().toString());
-                dbHelper.deleteMemo(a);
-                Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
-                startActivityForResult(intent, 101);
-                funcVoiceOut("메모가 삭제되었습니다");
+                funcVoiceOut("정말 삭제하시겠습니까?");
+                say = 1;
+                String str=et1.getText().toString();
+                str = reverseString(str);
+                str = str.substring(2);
+                str = reverseString(str);
+                et1.setText(str);
+            }
+            else if(resultStr.indexOf("네")>-1) {
+                if(say == 1){
+                    int a = Integer.parseInt(et3.getText().toString());
+                    dbHelper.deleteMemo(a);
+                    Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
+                    startActivityForResult(intent, 101);
+                    funcVoiceOut("메모가 삭제되었습니다");
+                }
+                else if(say == 2){
+                    int a = Integer.parseInt(et3.getText().toString());
+                    String imsi = et1.getText().toString();
+                    imsi = reverseString(imsi);
+                    imsi = imsi.substring(1);
+                    imsi = reverseString(imsi);
+                    et1.setText(imsi);
+
+                    dbHelper.updateMemo(a, imsi);
+                    Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
+                    speakOut(); //수정된 메모 읽어주기
+
+                    new android.os.Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startActivityForResult(intent, 101);
+                            funcVoiceOut("수정이 완료되었습니다");
+                        }
+                    },3000);
+                }
+            }
+            else if(resultStr.indexOf("아니요")>-1) {
+                String str=et1.getText().toString();
+                str = reverseString(str);
+                str = str.substring(3);
+                str = reverseString(str);
+                et1.setText(str);
+
+                if(say==1){
+                    et1.append(" 삭제");
+                }
+                else if( say== 2){
+                    et1.append(" 저장");
+                }
+
             }
             else if(resultStr.indexOf("저장")>-1) {
-                int a = Integer.parseInt(et3.getText().toString());
-                String imsi = et1.getText().toString();
-                imsi = reverseString(imsi);
-                imsi = imsi.substring(2);
-                imsi = reverseString(imsi);
-                et1.setText(imsi);
+                //"저장"글자까지 저장되지 않도록
+                say = 2;
+                String str=et1.getText().toString();
+                str = reverseString(str);
+                str = str.substring(2);
+                str = reverseString(str);
+                et1.setText(str);
+                funcVoiceOut("정말 저장하시겠습니까?");
 
-                dbHelper.updateMemo(a, imsi);
-                Intent intent = new Intent(getApplicationContext(), memolistActivity.class);
-                speakOut(); //수정된 메모 읽어주기
-
-                new android.os.Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivityForResult(intent, 101);
-                        funcVoiceOut("수정이 완료되었습니다");
-                    }
-                },3000);
 
             }
             else if(resultStr.indexOf("취소")>-1) {
