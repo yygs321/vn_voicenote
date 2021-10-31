@@ -108,12 +108,10 @@ public class searchActivity extends AppCompatActivity
         searchET.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -141,15 +139,6 @@ public class searchActivity extends AppCompatActivity
                     }
                 }
                 funcVoiceOut(sp.toString());
-
-                /*
-                String act=i.getAction();
-                if(act.equals(TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED)){
-                    buttonOn=0;
-                    autoStart();
-                }
-                */
-
             }
         });
 
@@ -188,25 +177,18 @@ public class searchActivity extends AppCompatActivity
         for (int i = 0; i < memoArrayList.size(); i++) {
             if (memoArrayList.get(i).getMaintext().toLowerCase().contains(searchText.toLowerCase())) {
                 filteredList.add(memoArrayList.get(i));
-                //sp.append(memoArrayList.get(i).getMaintext());
             }
         }
-
-        //funcVoiceOut(sp.toString());
 
         searchAdapter.filterList(filteredList);
         recyclerView.setVisibility(View.VISIBLE);
 
-        //funcVoiceOut("아웃");
-
         autoStart();
-
-        //searchET.setText(sp.toString());
-        //searchET.setText("xp");
     }
 
 
     private void autoStart(){
+        //검색 음성인식 시작
         if(buttonOn!=1) {
             new android.os.Handler().postDelayed(new Runnable() {
                 @Override
@@ -323,9 +305,10 @@ public class searchActivity extends AppCompatActivity
             else if(resultStr.indexOf("아니요")>-1){
                 //음성인식 정지
                 buttonOn=1;
-                funcVoiceOut("검색이 완료되었습니다");
+                funcVoiceOut("메모검색이 완료되었습니다");
             }
             else {
+                //검색된 메모 출력
                 buttonOn=1;
                 for(int i = 0; i < matches.size() ; i++){
                     searchET.setText(matches.get(i));

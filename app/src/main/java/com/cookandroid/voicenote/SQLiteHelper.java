@@ -95,7 +95,6 @@ public class SQLiteHelper {
     public void deleteAll(){
         String sql = "DELETE FROM " + table1 +";";
         db.execSQL(sql);
-        //전체 삭제 되기는 하는데 나갔다가 들어와야함
     }
 
     //특정 날짜 기준 삭제

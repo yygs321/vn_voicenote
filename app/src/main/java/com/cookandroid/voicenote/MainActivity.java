@@ -202,25 +202,23 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             resultStr = resultStr.replace(" ","");
             actionActivity(resultStr);
 
-            //"저장", "취소", "삭제"가 아닐 때만 반복
-        if (resultStr.indexOf("네")>-1){
-            memolistActivity.ButtonOff();
-        }
-         else if(resultStr.indexOf("취소")>-1){
-        }
-//        else if(resultStr.indexOf("삭제")>-1){
-//        }
-        else if(resultStr.indexOf("메모읽기")>-1){}
-        else if(resultStr.indexOf("글로쓰기")>-1){
-            setBackground("#93db58");
-        }
-        else if(resultStr.indexOf("검색")>-1){
-            setBackground("#93db58");
-        }
-        else if(resultStr.indexOf("도움말")>-1){
-            setBackground("#93db58");
-        }
-        else autoStart();
+
+            if (resultStr.indexOf("네")>-1){
+                memolistActivity.ButtonOff();
+            }
+             else if(resultStr.indexOf("취소")>-1){
+            }
+            else if(resultStr.indexOf("메모읽기")>-1){}
+            else if(resultStr.indexOf("글로쓰기")>-1){
+                setBackground("#93db58");
+            }
+            else if(resultStr.indexOf("검색")>-1){
+                setBackground("#93db58");
+            }
+            else if(resultStr.indexOf("도움말")>-1){
+                setBackground("#93db58");
+            }
+            else autoStart();
 
     }
         @Override
@@ -350,7 +348,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 else if( say== 2){
                     editText.append(" 저장");
                 }
-
             }
             else if(resultStr.indexOf("저장")>-1) {
                 //"저장"글자까지 저장되지 않도록
